@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,6 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('commerce_product_slot_variants')) {
+            return;
+        }
+
+        
         Schema::create('commerce_product_slot_variants', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('commerce_product_slot_id');
@@ -29,4 +35,3 @@ return new class extends Migration
         Schema::dropIfExists('commerce_product_slot_variants');
     }
 };
-

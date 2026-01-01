@@ -9,6 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('commerce_article_categories')) {
+            return;
+        }
+
         Schema::create('commerce_article_categories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('team_id')->nullable()->constrained('teams');
@@ -32,4 +36,3 @@ return new class extends Migration
         Schema::dropIfExists('commerce_article_categories');
     }
 };
-

@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,6 +9,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('commerce_sale_items')) {
+            return;
+        }
+
         Schema::create('commerce_sale_items', function (Blueprint $table) {
             $table->id();
             $table->foreignId('commerce_sale_id')
@@ -34,4 +39,3 @@ return new class extends Migration
         Schema::dropIfExists('commerce_sale_items');
     }
 };
-

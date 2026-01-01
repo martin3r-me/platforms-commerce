@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,6 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('commerce_article_net_prices')) {
+            return;
+        }
+
+        
         Schema::create('commerce_article_net_prices', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('commerce_article_id');
@@ -31,4 +37,3 @@ return new class extends Migration
         Schema::dropIfExists('commerce_article_net_prices');
     }
 };
-

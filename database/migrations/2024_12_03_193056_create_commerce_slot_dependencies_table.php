@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,6 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('commerce_slot_dependencies')) {
+            return;
+        }
+
+        
         Schema::create('commerce_slot_dependencies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('commerce_product_slot_id')
@@ -29,4 +35,3 @@ return new class extends Migration
         Schema::dropIfExists('commerce_slot_dependencies');
     }
 };
-

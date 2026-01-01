@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -8,6 +9,11 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('commerce_product_slot_dimension_values')) {
+            return;
+        }
+
+        
         Schema::create('commerce_product_slot_dimension_values', function (Blueprint $table) {
             $table->id();
             $table->foreignId('commerce_product_slot_dimension_id')->constrained('commerce_product_slot_dimensions')->onDelete('cascade')->name('dimension_id_index');
@@ -22,4 +28,3 @@ return new class extends Migration
         Schema::dropIfExists('commerce_product_slot_dimension_values');
     }
 };
-
