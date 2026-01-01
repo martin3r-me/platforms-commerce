@@ -87,7 +87,16 @@ class Article extends Component
 
     public function mount(CommerceArticle $commerceArticle)
     {
-        $this->article = $commerceArticle;
+        $this->article = $commerceArticle->load([
+            'articleNetPrices',
+            'articlePrices',
+            'attributeSets',
+            'attributeSetItems',
+            'category',
+            'taxCategory',
+            'activities',
+            'creator'
+        ]);
         $this->categories = CommerceArticleCategory::all();
         $this->taxCategories = CommerceTaxCategory::all();
 

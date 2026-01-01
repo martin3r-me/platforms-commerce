@@ -1,36 +1,45 @@
-<div class="h-full overflow-y-auto p-6">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Einstellungen</h1>
-    </div>
+<x-ui-page>
+    <x-slot name="navbar">
+        <x-ui-page-navbar title="Einstellungen" />
+    </x-slot>
 
-    <div class="space-y-4">
-        <div class="bg-white rounded-lg border p-4">
-            <h3 class="font-semibold mb-4">Steuerkategorien</h3>
-            <form wire:submit.prevent="save">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Name</label>
-                        <input type="text" wire:model="name" class="w-full border rounded-lg px-3 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Standard-Steuersatz (%)</label>
-                        <input type="number" wire:model="default_rate" class="w-full border rounded-lg px-3 py-2">
-                    </div>
-                    <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded-lg">Speichern</button>
+    <x-ui-page-container spacing="space-y-8">
+        <!-- Steuerkategorien -->
+        <x-ui-panel title="Steuerkategorien">
+            <form wire:submit.prevent="save" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <x-ui-input-text 
+                        name="name"
+                        label="Name"
+                        wire:model="name"
+                        required
+                        :errorKey="'name'"
+                    />
+                    <x-ui-input-number 
+                        name="default_rate"
+                        label="Standard-Steuersatz (%)"
+                        wire:model="default_rate"
+                        min="0"
+                        max="100"
+                        required
+                        :errorKey="'default_rate'"
+                    />
                 </div>
+                <x-ui-button type="submit" variant="primary">
+                    Steuerkategorie speichern
+                </x-ui-button>
             </form>
-        </div>
+        </x-ui-panel>
 
-        <div class="bg-white rounded-lg border p-4">
-            <h3 class="font-semibold mb-4">Steuerregeln Matrix</h3>
+        <!-- Steuerregeln Matrix -->
+        <x-ui-panel title="Steuerregeln Matrix">
             <div class="space-y-2">
                 @forelse($matrix as $rule)
                     <livewire:commerce.settings.tax-rule-row :rule="$rule" :key="'rule-'.$rule->id" />
                 @empty
-                    <div class="text-sm text-gray-500">Keine Steuerregeln vorhanden.</div>
+                    <div class="text-sm text-gray-500 p-4">Keine Steuerregeln vorhanden.</div>
                 @endforelse
             </div>
-        </div>
-    </div>
-</div>
-
+        </x-ui-panel>
+    </x-ui-page-container>
+</x-ui-page>

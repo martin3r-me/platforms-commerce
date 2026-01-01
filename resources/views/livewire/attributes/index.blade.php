@@ -1,11 +1,10 @@
-<div class="h-full overflow-y-auto p-6">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Attribute</h1>
-    </div>
+<x-ui-page>
+    <x-slot name="navbar">
+        <x-ui-page-navbar title="Attribute" />
+    </x-slot>
 
-    <div class="space-y-4">
-        <div class="bg-white rounded-lg border p-4">
-            <h3 class="font-semibold mb-4">Attributsets</h3>
+    <x-ui-page-container>
+        <x-ui-panel title="Attributsets">
             <div class="space-y-2">
                 @forelse($this->attributeSets as $set)
                     <a href="{{ route('commerce.attributes.show', $set) }}" class="block p-3 bg-gray-50 rounded border hover:bg-gray-100" wire:navigate>
@@ -15,7 +14,6 @@
                     <div class="text-sm text-gray-500">Keine Attributsets vorhanden.</div>
                 @endforelse
             </div>
-        </div>
-    </div>
-</div>
-
+        </x-ui-panel>
+    </x-ui-page-container>
+</x-ui-page>

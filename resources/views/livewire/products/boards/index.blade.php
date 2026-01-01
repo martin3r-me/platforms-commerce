@@ -1,11 +1,10 @@
-<div class="h-full overflow-y-auto p-6">
-    <div class="mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Produkt-Boards</h1>
-    </div>
+<x-ui-page>
+    <x-slot name="navbar">
+        <x-ui-page-navbar title="Produkt-Boards" />
+    </x-slot>
 
-    <div class="space-y-4">
-        <div class="bg-white rounded-lg border p-4">
-            <h3 class="font-semibold mb-4">Boards</h3>
+    <x-ui-page-container>
+        <x-ui-panel title="Boards">
             <div class="space-y-2">
                 @if($this->account)
                     @forelse($this->account->modulesCommerceProductBoards ?? [] as $board)
@@ -13,11 +12,12 @@
                             <div class="font-medium">{{ $board->name }}</div>
                         </a>
                     @empty
-                        <div class="text-sm text-gray-500">Keine Boards vorhanden.</div>
+                        <div class="text-sm text-gray-500 p-4">Keine Boards vorhanden.</div>
                     @endforelse
+                @else
+                    <div class="text-sm text-gray-500 p-4">Bitte wählen Sie einen Account aus, um Boards anzuzeigen.</div>
                 @endif
             </div>
-        </div>
-    </div>
-</div>
-
+        </x-ui-panel>
+    </x-ui-page-container>
+</x-ui-page>

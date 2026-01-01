@@ -23,7 +23,11 @@ class Product extends Component
 
     public function mount(CommerceProduct $commerceProduct)
     {
-        $this->product = $commerceProduct;
+        $this->product = $commerceProduct->load([
+            'productSlots',
+            'activities',
+            'creator'
+        ]);
     }
 
     public function updated($propertyName)
