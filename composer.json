@@ -1,0 +1,16 @@
+{
+  "name": "martin3r/platform-commerce",
+  "autoload": {
+    "psr-4": {
+      "Platform\\Commerce\\": "src/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Platform\\Commerce\\CommerceServiceProvider"
+      ]
+    }
+  }
+}
+
