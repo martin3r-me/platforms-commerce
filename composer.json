@@ -1,5 +1,15 @@
 {
   "name": "martin3r/platform-commerce",
+  "description": "Commerce Module for Platform - E-Commerce Management",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Platform Team",
+      "email": "team@platform.com"
+    }
+  ],
+  "require": {},
   "autoload": {
     "psr-4": {
       "Platform\\Commerce\\": "src/"
@@ -11,6 +21,8 @@
         "Platform\\Commerce\\CommerceServiceProvider"
       ]
     }
-  }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }
 

@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->nullable();
             $table->foreignId('team_id')->nullable()->constrained('teams');
-            $table->foreignId('modules_relations_contact_id')->nullable()->constrained('modules_relations_contacts')->nullOnDelete();
             $table->decimal('total_amount', 10, 2);
             $table->timestamp('paid_at')->nullable();
             $table->string('status')->default('pending');

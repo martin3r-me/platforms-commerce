@@ -16,7 +16,6 @@ class CommerceSale extends Model
     protected $fillable = [
         'user_id',
         'team_id',
-        'modules_relations_contact_id',
         'total_amount',
         'paid_at',
         'status',
