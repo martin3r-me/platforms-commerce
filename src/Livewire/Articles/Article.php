@@ -94,7 +94,6 @@ class Article extends Component
             'attributeSetItems',
             'category',
             'taxCategory',
-            'activities',
             'creator'
         ]);
         $this->categories = CommerceArticleCategory::all();

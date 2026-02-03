@@ -1,103 +1,62 @@
-{{-- Commerce Sidebar --}}
+{{--
+    Commerce Sidebar View
+    Modul-spezifische Sidebar
+
+    WICHTIG FÜR LLMs:
+    - Wird automatisch in der Haupt-Sidebar eingebunden
+    - Verwendet x-ui-sidebar-list und x-ui-sidebar-item Komponenten
+    - Unterstützt collapsed/expanded Zustand
+--}}
+
 <div>
     {{-- Modul Header --}}
-    <x-sidebar-module-header module-name="Commerce" />
-
-    {{-- Abschnitt: Allgemein --}}
-    <div>
-        <h4 x-show="!collapsed" class="p-3 text-sm italic text-secondary uppercase">Allgemein</h4>
-
-        {{-- Dashboard --}}
-        <a href="{{ route('commerce.index') }}"
-           class="relative d-flex items-center p-2 my-1 rounded-md font-medium transition"
-           :class="[
-               window.location.pathname === '/commerce' || 
-               window.location.pathname.endsWith('/commerce') || 
-               window.location.pathname.endsWith('/commerce/')
-                   ? 'bg-primary text-on-primary shadow-md'
-                   : 'text-black hover:bg-primary-10 hover:text-primary hover:shadow-md',
-               collapsed ? 'justify-center' : 'gap-3'
-           ]"
-           wire:navigate>
-            <x-heroicon-o-home class="w-6 h-6 flex-shrink-0"/>
-            <span x-show="!collapsed" class="truncate">Dashboard</span>
-        </a>
-
-        {{-- Artikel --}}
-        <a href="{{ route('commerce.articles.index') }}"
-           class="relative d-flex items-center p-2 my-1 rounded-md font-medium transition"
-           :class="[
-               window.location.pathname.includes('/commerce/articles')
-                   ? 'bg-primary text-on-primary shadow-md'
-                   : 'text-black hover:bg-primary-10 hover:text-primary hover:shadow-md',
-               collapsed ? 'justify-center' : 'gap-3'
-           ]"
-           wire:navigate>
-            <x-heroicon-o-rectangle-stack class="w-6 h-6 flex-shrink-0"/>
-            <span x-show="!collapsed" class="truncate">Artikel</span>
-        </a>
-
-        {{-- Produkte --}}
-        <a href="{{ route('commerce.products.index') }}"
-           class="relative d-flex items-center p-2 my-1 rounded-md font-medium transition"
-           :class="[
-               window.location.pathname.includes('/commerce/products')
-                   ? 'bg-primary text-on-primary shadow-md'
-                   : 'text-black hover:bg-primary-10 hover:text-primary hover:shadow-md',
-               collapsed ? 'justify-center' : 'gap-3'
-           ]"
-           wire:navigate>
-            <x-heroicon-o-cube class="w-6 h-6 flex-shrink-0"/>
-            <span x-show="!collapsed" class="truncate">Produkte</span>
-        </a>
-
-        {{-- Attribute --}}
-        <a href="{{ route('commerce.attributes.index') }}"
-           class="relative d-flex items-center p-2 my-1 rounded-md font-medium transition"
-           :class="[
-               window.location.pathname.includes('/commerce/attributes')
-                   ? 'bg-primary text-on-primary shadow-md'
-                   : 'text-black hover:bg-primary-10 hover:text-primary hover:shadow-md',
-               collapsed ? 'justify-center' : 'gap-3'
-           ]"
-           wire:navigate>
-            <x-heroicon-o-tag class="w-6 h-6 flex-shrink-0"/>
-            <span x-show="!collapsed" class="truncate">Attribute</span>
-        </a>
-
-        {{-- Einstellungen --}}
-        <a href="{{ route('commerce.settings.index') }}"
-           class="relative d-flex items-center p-2 my-1 rounded-md font-medium transition"
-           :class="[
-               window.location.pathname.includes('/commerce/settings')
-                   ? 'bg-primary text-on-primary shadow-md'
-                   : 'text-black hover:bg-primary-10 hover:text-primary hover:shadow-md',
-               collapsed ? 'justify-center' : 'gap-3'
-           ]"
-           wire:navigate>
-            <x-heroicon-o-cog-6-tooth class="w-6 h-6 flex-shrink-0"/>
-            <span x-show="!collapsed" class="truncate">Einstellungen</span>
-        </a>
+    <div x-show="!collapsed" class="p-3 text-sm italic text-[var(--ui-secondary)] uppercase border-b border-[var(--ui-border)] mb-2">
+        Commerce
     </div>
+    
+    {{-- Abschnitt: Allgemein --}}
+    <x-ui-sidebar-list label="Allgemein">
+        <x-ui-sidebar-item :href="route('commerce.index')">
+            @svg('heroicon-o-home', 'w-4 h-4 text-[var(--ui-secondary)]')
+            <span class="ml-2 text-sm">Dashboard</span>
+        </x-ui-sidebar-item>
+        <x-ui-sidebar-item :href="route('commerce.articles.index')">
+            @svg('heroicon-o-rectangle-stack', 'w-4 h-4 text-[var(--ui-secondary)]')
+            <span class="ml-2 text-sm">Artikel</span>
+        </x-ui-sidebar-item>
+        <x-ui-sidebar-item :href="route('commerce.products.index')">
+            @svg('heroicon-o-cube', 'w-4 h-4 text-[var(--ui-secondary)]')
+            <span class="ml-2 text-sm">Produkte</span>
+        </x-ui-sidebar-item>
+        <x-ui-sidebar-item :href="route('commerce.attributes.index')">
+            @svg('heroicon-o-tag', 'w-4 h-4 text-[var(--ui-secondary)]')
+            <span class="ml-2 text-sm">Attribute</span>
+        </x-ui-sidebar-item>
+        <x-ui-sidebar-item :href="route('commerce.settings.index')">
+            @svg('heroicon-o-cog-6-tooth', 'w-4 h-4 text-[var(--ui-secondary)]')
+            <span class="ml-2 text-sm">Einstellungen</span>
+        </x-ui-sidebar-item>
+    </x-ui-sidebar-list>
 
-    {{-- Abschnitt: Produkt-Boards (dynamisch) --}}
-    @if($productBoards->isNotEmpty())
-        <div x-show="!collapsed" class="mt-2">
-            <h4 class="p-3 text-sm italic text-secondary uppercase">Produkt-Boards</h4>
-            @foreach($productBoards as $board)
-                <a href="{{ route('commerce.products.boards.show', $board) }}"
-                   class="relative d-flex items-center p-2 my-1 rounded-md font-medium transition gap-3"
-                   :class="[
-                       window.location.pathname.includes('/commerce/products/boards/{{ $board->id }}')
-                           ? 'bg-primary text-on-primary shadow-md'
-                           : 'text-black hover:bg-primary-10 hover:text-primary hover:shadow-md'
-                   ]"
-                   wire:navigate>
-                    <x-heroicon-o-folder class="w-6 h-6 flex-shrink-0"/>
-                    <span class="truncate">{{ $board->name }}</span>
-                </a>
-            @endforeach
+    {{-- Collapsed: Icons-only --}}
+    <div x-show="collapsed" class="px-2 py-2 border-b border-[var(--ui-border)]">
+        <div class="flex flex-col gap-2">
+            <a href="{{ route('commerce.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                @svg('heroicon-o-home', 'w-5 h-5')
+            </a>
+            <a href="{{ route('commerce.articles.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                @svg('heroicon-o-rectangle-stack', 'w-5 h-5')
+            </a>
+            <a href="{{ route('commerce.products.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                @svg('heroicon-o-cube', 'w-5 h-5')
+            </a>
+            <a href="{{ route('commerce.attributes.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                @svg('heroicon-o-tag', 'w-5 h-5')
+            </a>
+            <a href="{{ route('commerce.settings.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                @svg('heroicon-o-cog-6-tooth', 'w-5 h-5')
+            </a>
         </div>
-    @endif
+    </div>
 </div>
 

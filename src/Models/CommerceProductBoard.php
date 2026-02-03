@@ -37,10 +37,19 @@ class CommerceProductBoard extends Model
         return $this->hasMany(CommerceProductBoardSlot::class, 'commerce_product_board_id')->orderBy('order');
     }
 
-    public function account()
-    {
-        return $this->belongsTo(\App\Models\Modules\Relations\ModulesRelationsAccount::class, 'modules_relations_account_id');
-    }
+    /**
+     * Account-Beziehung (optional)
+     * 
+     * HINWEIS: Diese Beziehung ist optional, da modules_relations_account_id nullable ist.
+     * Falls kein Relations-Modul vorhanden ist, wird diese Beziehung nicht verwendet.
+     * 
+     * Um zu aktivieren, wenn Relations-Modul vorhanden:
+     * 
+     * public function account()
+     * {
+     *     return $this->belongsTo(\App\Models\Modules\Relations\ModulesRelationsAccount::class, 'modules_relations_account_id');
+     * }
+     */
 
     public function creator()
     {

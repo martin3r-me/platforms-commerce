@@ -23,9 +23,8 @@
 use Platform\Commerce\Livewire\Index;
 use Platform\Commerce\Livewire\Articles\Index as ArticlesIndex;
 use Platform\Commerce\Livewire\Articles\Article;
+use Platform\Commerce\Livewire\Products\Index as ProductsIndex;
 use Platform\Commerce\Livewire\Products\Product;
-use Platform\Commerce\Livewire\Products\Boards\Index as ProductsBoardsIndex;
-use Platform\Commerce\Livewire\Products\Boards\Board;
 use Platform\Commerce\Livewire\Attributes\Index as AttributesIndex;
 use Platform\Commerce\Livewire\Attributes\AttributeSet;
 use Platform\Commerce\Livewire\Settings\Index as SettingsIndex;
@@ -55,26 +54,19 @@ Route::get('/articles/{commerceArticle}', Article::class)
 
 /**
  * Produkt Routes
- * 
+ *
  * Verwaltung von Produkten (CommerceProduct)
+ * Einfache Liste ohne Board-Struktur
  */
-Route::get('/products', ProductsBoardsIndex::class)->name('commerce.products.index');
+Route::get('/products', ProductsIndex::class)->name('commerce.products.index');
 
 /**
  * Produkt Detail Route
- * 
+ *
  * Model-Binding: {commerceProduct} wird automatisch zu CommerceProduct Model
  */
 Route::get('/products/{commerceProduct}', Product::class)
     ->name('commerce.products.show');
-
-/**
- * Produkt Board Route
- * 
- * Model-Binding: {commerceProductBoard} wird automatisch zu CommerceProductBoard Model
- */
-Route::get('/products/boards/{commerceProductBoard}', Board::class)
-    ->name('commerce.products.boards.show');
 
 /**
  * Attribute Routes

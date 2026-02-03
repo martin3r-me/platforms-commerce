@@ -52,15 +52,14 @@ class CommerceProductBoardSlot extends Model
         return $this->hasMany(CommerceProduct::class, 'commerce_product_board_slot_id')->orderBy('order');
     }
 
-    public function board()
-    {
-        return $this->belongsTo(CommerceProductBoard::class, 'commerce_product_board_id');
-    }
-
-    public function apiRequests()
-    {
-        return $this->morphMany(\App\Models\ApiRequest::class, 'requestable');
-    }
+    /**
+     * HINWEIS: Activity-, Media- und Account-Beziehungen wurden entfernt.
+     * 
+     * Später können hier Beziehungen zu:
+     * - Brands (Marken)
+     * - CRM Contacts (Kontakte)
+     * hinzugefügt werden.
+     */
 
     public function creator()
     {

@@ -16,7 +16,6 @@ class Board extends Component
     {
         $this->board = $commerceProductBoard->load([
             'productBoardSlots.products',
-            'activities'
         ]);
     }
 

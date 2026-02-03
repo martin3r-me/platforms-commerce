@@ -131,7 +131,7 @@
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Zusatz
                 </button>
-                <button @click="scrollToSection('attachments')" 
+                <button @click="scrollToSection('attachments')"
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'attachments', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'attachments' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Produktbilder

@@ -237,12 +237,12 @@ x-init="$nextTick(() => initIntersectionObserver())">
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Versand
                 </button>
-                <button @click="scrollToSection('images')" 
+                <button @click="scrollToSection('images')"
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'images', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'images' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Artikel Bilder
                 </button>
-                <button @click="scrollToSection('additional')" 
+                <button @click="scrollToSection('additional')"
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'additional', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'additional' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Erweitert

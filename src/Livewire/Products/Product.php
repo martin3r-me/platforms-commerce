@@ -25,7 +25,6 @@ class Product extends Component
     {
         $this->product = $commerceProduct->load([
             'productSlots',
-            'activities',
             'creator'
         ]);
     }

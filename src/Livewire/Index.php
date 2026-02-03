@@ -20,6 +20,10 @@ namespace Platform\Commerce\Livewire;
 
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
+use Platform\Commerce\Models\CommerceArticle;
+use Platform\Commerce\Models\CommerceProduct;
+use Platform\Commerce\Models\CommerceAttributeSet;
+use Platform\Commerce\Models\CommerceArticleCategory;
 
 class Index extends Component
 {
@@ -61,20 +65,20 @@ class Index extends Component
         $team = $user->currentTeam;
 
         /**
-         * BEISPIEL: Daten laden
+         * Statistiken laden
          * 
-         * $articles = CommerceArticle::where('team_id', $team->id)
-         *     ->orderBy('name')
-         *     ->get();
-         * 
-         * $stats = [
-         *     'total_articles' => $articles->count(),
-         *     'total_products' => CommerceProduct::where('team_id', $team->id)->count(),
-         * ];
+         * WICHTIG: Daten werden hier geladen, nicht in der View!
+         * Das ist Best Practice für Performance und Testbarkeit.
          */
+        $stats = [
+            'total_articles' => CommerceArticle::where('team_id', $team->id)->count(),
+            'total_products' => CommerceProduct::where('team_id', $team->id)->count(),
+            'total_attributes' => CommerceAttributeSet::where('team_id', $team->id)->count(),
+            'total_categories' => CommerceArticleCategory::where('team_id', $team->id)->count(),
+        ];
 
         return view('commerce::livewire.index', [
-            // Füge hier deine Daten hinzu
+            'stats' => $stats,
         ])->layout('platform::layouts.app');
     }
 }

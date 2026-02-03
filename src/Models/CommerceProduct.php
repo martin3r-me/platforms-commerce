@@ -47,57 +47,14 @@ class CommerceProduct extends Model
         });
     }
 
-    public function activities()
-    {
-        return $this->morphMany(\App\Models\Activity::class, 'activityable')->latest();
-    }
-
-    public function hero()
-    {
-        return $this->morphToMany(\App\Models\Media::class, 'heroable', 'heroables')->withTimestamps();
-    }
-
-    public function contextItems()
-    {
-        return $this->morphMany(\App\Models\ContextItem::class, 'item');
-    }
-
-    public function customFields()
-    {
-        return $this->morphMany(\App\Models\CustomField::class, 'customizable')->orderBy('order');
-    }
-
-    public function media()
-    {
-        return $this->morphToMany(\App\Models\Media::class, 'mediable')
-                    ->withTimestamps();
-    }
-
-    public function files()
-    {
-        return $this->morphToMany(\App\Models\Media::class, 'mediable')
-            ->whereHas('mimeType', function ($q) {
-                return $q->where('mime_type', 'not like', '%image%');
-            });
-    }
-
-    public function images()
-    {
-        return $this->morphToMany(\App\Models\Media::class, 'mediable')
-            ->whereHas('mimeType', function ($q) {
-                return $q->where('mime_type', 'like', '%image%');
-            });
-    }
-
-    public function apiRequests()
-    {
-        return $this->morphMany(\App\Models\ApiRequest::class, 'requestable');
-    }
-
-    public function toolboxes()
-    {
-        return $this->morphMany(\App\Models\Toolboxes\ToolboxesToolbox::class, 'toolboxable')->orderBy('order');
-    }
+    /**
+     * HINWEIS: Activity-, Media- und Account-Beziehungen wurden entfernt.
+     * 
+     * Später können hier Beziehungen zu:
+     * - Brands (Marken)
+     * - CRM Contacts (Kontakte)
+     * hinzugefügt werden.
+     */
 
     public function slot()
     {

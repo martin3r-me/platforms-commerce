@@ -21,8 +21,10 @@ class Slot extends Component
     public $availableVariants = [];
     public $selectedVariant = null;
 
-    public function mount($productSlot)
+    public function mount($productSlot, $product = null)
     {
+        $this->product = $product;
+
         foreach ($productSlot->dimensions as $dimension) {
             $this->dimensionValues[$dimension->id] = '';
         }
@@ -31,9 +33,14 @@ class Slot extends Component
             $this->variantArticles[$variant->id] = $variant->commerce_article_id ?? '';
         }
 
-        // Account und Articles werden später gesetzt, wenn product verfügbar ist
-        $this->account = null;
-        $this->articles = [];
+        // Artikel für das Team laden
+        if ($product && $product->team_id) {
+            $this->articles = \Platform\Commerce\Models\CommerceArticle::where('team_id', $product->team_id)
+                ->orderBy('name')
+                ->get();
+        } else {
+            $this->articles = collect([]);
+        }
 
         $this->productSlot = $productSlot;
         $this->productSlot->required = (bool) $this->productSlot->required;
@@ -68,6 +75,11 @@ class Slot extends Component
 
     public function updateAvailableVariants()
     {
+        if (!$this->product) {
+            $this->availableVariants = collect([]);
+            return;
+        }
+
         $assignedVariantIds = $this->dependencies->pluck('commerce_product_slot_variant_id')->toArray();
 
         $this->availableVariants = $this->product
