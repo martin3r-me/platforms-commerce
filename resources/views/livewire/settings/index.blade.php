@@ -10,6 +10,10 @@
 
 <x-ui-page x-data="{
     selectedTab: 'tax',
+    editCategoryOpen: false,
+    editContextOpen: false,
+    confirmDeleteCategory: null,
+    confirmDeleteContext: null,
     scrollToSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (section) {
@@ -17,7 +21,7 @@
         }
         this.selectedTab = sectionId;
     }
-}">
+}" @open-edit-category-modal.window="editCategoryOpen = true" @open-edit-context-modal.window="editContextOpen = true">
     <x-slot name="navbar">
         <x-ui-page-navbar title="Einstellungen" icon="heroicon-o-cog-6-tooth" />
     </x-slot>
@@ -94,10 +98,39 @@
                     <div class="bg-[var(--ui-muted-5)] rounded-lg p-4">
                         <h3 class="text-sm font-medium text-[var(--ui-secondary)] mb-3">Bestehende Steuerkategorien</h3>
                         <div class="divide-y divide-[var(--ui-border)]">
-                            @forelse($matrix->pluck('taxCategory')->unique() as $category)
-                                <div class="py-2 flex items-center justify-between">
-                                    <span class="text-sm text-[var(--ui-secondary)]">{{ $category->name }}</span>
-                                    <span class="text-sm font-medium text-[var(--ui-secondary)]">{{ $category->default_rate }}%</span>
+                            @forelse($categories as $category)
+                                <div class="py-2 flex items-center justify-between group">
+                                    <div>
+                                        <span class="text-sm text-[var(--ui-secondary)]">{{ $category->name }}</span>
+                                        <span class="text-sm font-medium text-[var(--ui-secondary)] ml-2">{{ $category->default_rate }}%</span>
+                                    </div>
+                                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button wire:click="editCategory({{ $category->id }})"
+                                                class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-[var(--ui-muted-10)] hover:text-[var(--ui-secondary)] transition-all">
+                                            <x-heroicon-s-pencil-square class="w-4 h-4"/>
+                                        </button>
+                                        <button @click="confirmDeleteCategory = {{ $category->id }}"
+                                                class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-red-50 hover:text-red-600 transition-all">
+                                            <x-heroicon-s-trash class="w-4 h-4"/>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {{-- Inline Delete Confirmation --}}
+                                <div x-show="confirmDeleteCategory === {{ $category->id }}" x-cloak
+                                     class="py-2 px-3 bg-red-50 rounded-lg flex items-center justify-between">
+                                    <span class="text-sm text-red-700">Wirklich löschen?</span>
+                                    <div class="flex items-center gap-2">
+                                        <button @click="confirmDeleteCategory = null"
+                                                class="text-xs px-2 py-1 rounded bg-white text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                                            Abbrechen
+                                        </button>
+                                        <button wire:click="deleteCategory({{ $category->id }})"
+                                                @click="confirmDeleteCategory = null"
+                                                class="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700">
+                                            Löschen
+                                        </button>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="py-2 text-sm text-[var(--ui-muted)]">Keine Kategorien vorhanden.</div>
@@ -149,14 +182,41 @@
                     <div class="bg-[var(--ui-muted-5)] rounded-lg p-4">
                         <h3 class="text-sm font-medium text-[var(--ui-secondary)] mb-3">Bestehende Verkaufskontexte</h3>
                         <div class="divide-y divide-[var(--ui-border)]">
-                            @forelse($matrix->pluck('salesContext')->unique() as $context)
-                                <div class="py-2">
+                            @forelse($contexts as $context)
+                                <div class="py-2 group">
                                     <div class="flex items-center justify-between">
                                         <span class="text-sm font-medium text-[var(--ui-secondary)]">{{ $context->name }}</span>
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button wire:click="editContext({{ $context->id }})"
+                                                    class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-[var(--ui-muted-10)] hover:text-[var(--ui-secondary)] transition-all">
+                                                <x-heroicon-s-pencil-square class="w-4 h-4"/>
+                                            </button>
+                                            <button @click="confirmDeleteContext = {{ $context->id }}"
+                                                    class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-red-50 hover:text-red-600 transition-all">
+                                                <x-heroicon-s-trash class="w-4 h-4"/>
+                                            </button>
+                                        </div>
                                     </div>
                                     @if($context->description)
                                         <p class="text-sm text-[var(--ui-muted)] mt-1">{{ $context->description }}</p>
                                     @endif
+                                </div>
+
+                                {{-- Inline Delete Confirmation --}}
+                                <div x-show="confirmDeleteContext === {{ $context->id }}" x-cloak
+                                     class="py-2 px-3 bg-red-50 rounded-lg flex items-center justify-between">
+                                    <span class="text-sm text-red-700">Wirklich löschen?</span>
+                                    <div class="flex items-center gap-2">
+                                        <button @click="confirmDeleteContext = null"
+                                                class="text-xs px-2 py-1 rounded bg-white text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                                            Abbrechen
+                                        </button>
+                                        <button wire:click="deleteContext({{ $context->id }})"
+                                                @click="confirmDeleteContext = null"
+                                                class="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700">
+                                            Löschen
+                                        </button>
+                                    </div>
                                 </div>
                             @empty
                                 <div class="py-2 text-sm text-[var(--ui-muted)]">Keine Kontexte vorhanden.</div>
@@ -206,4 +266,81 @@
             </x-ui-panel>
         </section>
     </x-ui-page-container>
+
+    {{-- Edit Category Modal --}}
+    <div x-show="editCategoryOpen" x-cloak @keydown.escape.window="editCategoryOpen = false">
+        <x-ui-modal size="md">
+            <x-slot name="header">
+                Steuerkategorie bearbeiten
+            </x-slot>
+
+            <div class="space-y-4">
+                <x-ui-input-text
+                    name="editCategoryName"
+                    label="Name"
+                    wire:model="editCategoryName"
+                    required
+                    :errorKey="'editCategoryName'"
+                />
+                <x-ui-input-number
+                    name="editCategoryRate"
+                    label="Standard-Steuersatz (%)"
+                    wire:model="editCategoryRate"
+                    min="0"
+                    max="100"
+                    step="0.01"
+                    required
+                    :errorKey="'editCategoryRate'"
+                />
+            </div>
+
+            <x-slot name="footer">
+                <div class="d-flex justify-end gap-2">
+                    <x-ui-button type="button" variant="secondary-outline" @click="editCategoryOpen = false">
+                        Abbrechen
+                    </x-ui-button>
+                    <x-ui-button type="button" variant="primary" wire:click="updateCategory" @click="editCategoryOpen = false">
+                        Speichern
+                    </x-ui-button>
+                </div>
+            </x-slot>
+        </x-ui-modal>
+    </div>
+
+    {{-- Edit Context Modal --}}
+    <div x-show="editContextOpen" x-cloak @keydown.escape.window="editContextOpen = false">
+        <x-ui-modal size="md">
+            <x-slot name="header">
+                Verkaufskontext bearbeiten
+            </x-slot>
+
+            <div class="space-y-4">
+                <x-ui-input-text
+                    name="editContextName"
+                    label="Kontext Name"
+                    wire:model="editContextName"
+                    required
+                    :errorKey="'editContextName'"
+                />
+                <x-ui-input-textarea
+                    name="editContextDescription"
+                    label="Kontext Beschreibung"
+                    wire:model="editContextDescription"
+                    rows="3"
+                    :errorKey="'editContextDescription'"
+                />
+            </div>
+
+            <x-slot name="footer">
+                <div class="d-flex justify-end gap-2">
+                    <x-ui-button type="button" variant="secondary-outline" @click="editContextOpen = false">
+                        Abbrechen
+                    </x-ui-button>
+                    <x-ui-button type="button" variant="primary" wire:click="updateContext" @click="editContextOpen = false">
+                        Speichern
+                    </x-ui-button>
+                </div>
+            </x-slot>
+        </x-ui-modal>
+    </div>
 </x-ui-page>
