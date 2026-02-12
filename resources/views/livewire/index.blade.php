@@ -96,7 +96,7 @@
 
     {{-- Linke Sidebar (Schnellzugriff) --}}
     <x-slot name="sidebar">
-        <x-ui-page-sidebar title="Schnellzugriff" width="w-80" :defaultOpen="true">
+        <x-ui-page-sidebar title="Schnellzugriff" width="w-80" :defaultOpen="true" storeKey="sidebarOpen" side="left">
             <div class="p-6 space-y-6">
                 {{-- Quick Actions --}}
                 <div>

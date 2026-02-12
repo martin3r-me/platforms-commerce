@@ -43,7 +43,7 @@ class AttributeSet extends Component
             'itemColor' => 'nullable|string|max:7',
         ]);
 
-        $item = $this->attributeSet->attributeSetItems()->create([
+        $this->attributeSet->attributeSetItems()->create([
             'name' => $this->itemName,
             'description' => $this->itemDescription,
             'color' => $this->itemColor,
@@ -51,6 +51,7 @@ class AttributeSet extends Component
 
         $this->items = $this->attributeSet->attributeSetItems()->get();
         $this->reset(['itemName', 'itemDescription', 'itemColor']);
+        $this->dispatch('notify', type: 'success', message: 'Item wurde angelegt.');
     }
 
     public function deleteItem($id)
@@ -59,6 +60,7 @@ class AttributeSet extends Component
         if ($item) {
             $item->delete();
             $this->items = $this->items->filter(fn($i) => $i->id !== $id);
+            $this->dispatch('notify', type: 'success', message: 'Item wurde gelöscht.');
         }
     }
 
@@ -80,6 +82,7 @@ class AttributeSet extends Component
             ]);
 
             $this->items = $this->attributeSet->attributeSetItems()->get();
+            $this->dispatch('notify', type: 'success', message: 'Item wurde aktualisiert.');
         }
 
         $this->reset(['itemId', 'itemName', 'itemDescription', 'itemColor']);

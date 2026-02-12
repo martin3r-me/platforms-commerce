@@ -240,8 +240,12 @@ class CommerceServiceProvider extends ServiceProvider
             }
 
             // Alias generieren (z.B. Articles/Index -> articles.index)
-            $aliasPath = str_replace(['\\', '/'], '.', Str::kebab(str_replace('.php', '', $relativePath)));
-            $alias = $prefix . '.' . $aliasPath;
+            // WICHTIG: Str::kebab() muss auf jedes Segment einzeln angewendet werden,
+            // nicht auf den gesamten Pfad (sonst wird Settings/TaxRuleRow zu settings/-tax-rule-row)
+            $pathWithoutExtension = str_replace('.php', '', $relativePath);
+            $segments = preg_split('/[\\\\\/]/', $pathWithoutExtension);
+            $kebabSegments = array_map(fn($s) => Str::kebab($s), $segments);
+            $alias = $prefix . '.' . implode('.', $kebabSegments);
 
             // Livewire-Komponente registrieren
             Livewire::component($alias, $class);

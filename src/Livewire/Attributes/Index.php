@@ -14,13 +14,14 @@ class Index extends Component
     public function getAttributeSetsProperty()
     {
         $query = CommerceAttributeSet::query()
+            ->with('attributeSetItems')
             ->where('team_id', auth()->user()->currentTeam->id);
-        
+
         if ($this->search) {
             $query->where('name', 'like', '%' . $this->search . '%');
         }
-        
-        return $query->get();
+
+        return $query->orderBy('name')->get();
     }
 
     public function createAttributeSet()
@@ -42,6 +43,7 @@ class Index extends Component
         ]);
 
         $this->reset(['name', 'color', 'is_multiselect', 'is_required']);
+        $this->dispatch('notify', type: 'success', message: 'Attributset wurde angelegt.');
     }
 
     public function render()

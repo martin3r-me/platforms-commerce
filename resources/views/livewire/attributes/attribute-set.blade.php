@@ -1,11 +1,26 @@
-<x-ui-page>
+{{--
+    AttributeSet Detail View
+    Einzelnes Attributset bearbeiten und Items verwalten
+
+    WICHTIG FÜR LLMs:
+    - Zeigt Details eines Attributsets
+    - Ermöglicht das Bearbeiten und Hinzufügen von Items
+    - Verwendet moderne UI-Komponenten
+--}}
+
+<x-ui-page x-data="{
+    createModalOpen: false,
+    editModalOpen: false,
+    confirmDeleteItem: null
+}" @open-modal.window="createModalOpen = true; $wire.resetItemFields()">
+
     <x-slot name="navbar">
-        <x-ui-page-navbar title="{{ $attributeSet->name }}">
+        <x-ui-page-navbar title="{{ $attributeSet->name }}" icon="heroicon-o-tag">
             <x-slot name="actions">
-                <x-ui-button 
-                    variant="primary" 
-                    size="sm" 
-                    @click="$dispatch('open-modal')"
+                <x-ui-button
+                    variant="primary"
+                    size="sm"
+                    @click="createModalOpen = true"
                     class="d-flex items-center gap-2"
                 >
                     <x-heroicon-s-plus class="w-4 h-4"/>
@@ -22,10 +37,10 @@
                 <div>
                     <h3 class="text-sm font-bold text-[var(--ui-secondary)] uppercase tracking-wider mb-4">Navigation</h3>
                     <div class="space-y-2">
-                        <x-ui-button 
-                            variant="secondary-outline" 
-                            size="sm" 
-                            :href="route('commerce.attributes.index')" 
+                        <x-ui-button
+                            variant="secondary-outline"
+                            size="sm"
+                            :href="route('commerce.attributes.index')"
                             wire:navigate
                             class="w-full"
                         >
@@ -37,11 +52,11 @@
                     </div>
                 </div>
 
-                <hr>
+                <hr class="border-[var(--ui-border)]">
 
                 {{-- AttributeSet Info --}}
                 <div>
-                    <h3 class="text-sm font-bold text-[var(--ui-secondary)] uppercase tracking-wider mb-4">AttributSet Info</h3>
+                    <h3 class="text-sm font-bold text-[var(--ui-secondary)] uppercase tracking-wider mb-4">Attributset Info</h3>
                     <div class="space-y-2 text-sm">
                         <div class="flex justify-between">
                             <span class="text-[var(--ui-muted)]">Erstellt:</span>
@@ -54,6 +69,14 @@
                         <div class="flex justify-between">
                             <span class="text-[var(--ui-muted)]">Items:</span>
                             <span class="font-medium text-[var(--ui-secondary)]">{{ $items->count() }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-[var(--ui-muted)]">Mehrfachauswahl:</span>
+                            <span class="font-medium text-[var(--ui-secondary)]">{{ $attributeSet->is_multiselect ? 'Ja' : 'Nein' }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-[var(--ui-muted)]">Pflichtfeld:</span>
+                            <span class="font-medium text-[var(--ui-secondary)]">{{ $attributeSet->is_required ? 'Ja' : 'Nein' }}</span>
                         </div>
                     </div>
                 </div>
@@ -73,10 +96,10 @@
     </x-slot>
 
     <x-ui-page-container spacing="space-y-8">
-        <!-- AttributeSet Details -->
-        <x-ui-panel title="AttributeSet Details">
+        {{-- AttributeSet Details --}}
+        <x-ui-panel title="Attributset Details">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <x-ui-input-text 
+                <x-ui-input-text
                     name="attributeSet.name"
                     label="Name"
                     wire:model.live="attributeSet.name"
@@ -84,18 +107,18 @@
                     :errorKey="'attributeSet.name'"
                 />
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Farbe</label>
+                    <label class="block text-sm font-medium text-[var(--ui-secondary)] mb-1">Farbe</label>
                     <input type="color"
                            wire:model.live="attributeSet.color"
-                           class="w-full h-10 bg-slate-50 border-0 rounded-lg px-3 text-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-purple-500">
+                           class="w-full h-10 bg-[var(--ui-muted-5)] border-0 rounded-lg px-3 text-sm ring-1 ring-[var(--ui-border)] focus:ring-2 focus:ring-[var(--ui-primary)]">
                 </div>
                 <div class="flex flex-col justify-center">
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox"
                                wire:model.live="attributeSet.is_multiselect"
                                class="sr-only peer">
-                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                        <span class="ml-3 text-sm font-medium text-slate-700">Mehrfachauswahl</span>
+                        <div class="w-11 h-6 bg-[var(--ui-muted-10)] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--ui-primary-light)] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--ui-border)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--ui-primary)]"></div>
+                        <span class="ml-3 text-sm font-medium text-[var(--ui-secondary)]">Mehrfachauswahl</span>
                     </label>
                 </div>
                 <div class="flex flex-col justify-center">
@@ -103,112 +126,113 @@
                         <input type="checkbox"
                                wire:model.live="attributeSet.is_required"
                                class="sr-only peer">
-                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-                        <span class="ml-3 text-sm font-medium text-slate-700">Pflichtfeld</span>
+                        <div class="w-11 h-6 bg-[var(--ui-muted-10)] peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--ui-primary-light)] rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--ui-border)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[var(--ui-primary)]"></div>
+                        <span class="ml-3 text-sm font-medium text-[var(--ui-secondary)]">Pflichtfeld</span>
                     </label>
                 </div>
             </div>
         </x-ui-panel>
 
-        <!-- Items List -->
-        <x-ui-panel title="Items">
-            <x-ui-table compact="true">
-                <x-ui-table-header>
-                    <x-ui-table-header-cell compact="true">Name</x-ui-table-header-cell>
-                    <x-ui-table-header-cell compact="true">Beschreibung</x-ui-table-header-cell>
-                    <x-ui-table-header-cell compact="true">Farbe</x-ui-table-header-cell>
-                    <x-ui-table-header-cell compact="true" class="text-right">Aktionen</x-ui-table-header-cell>
-                </x-ui-table-header>
-                
-                <x-ui-table-body>
-                    @forelse($items as $item)
-                        <x-ui-table-row compact="true">
-                            <x-ui-table-cell compact="true">
-                                <span class="text-sm font-medium text-slate-900">{{ $item->name }}</span>
-                            </x-ui-table-cell>
-                            <x-ui-table-cell compact="true">
-                                <span class="text-sm text-slate-600">{{ $item->description ?? '-' }}</span>
-                            </x-ui-table-cell>
-                            <x-ui-table-cell compact="true">
-                                <div class="w-6 h-6 rounded-full" style="background-color: {{ $item->color ?? '#ccc' }};"></div>
-                            </x-ui-table-cell>
-                            <x-ui-table-cell compact="true" class="text-right">
-                                <div class="flex items-center justify-end gap-2">
-                                    <button @click="$dispatch('open-edit-modal', { item: {{ json_encode($item) }} })"
-                                            class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-all duration-200">
-                                        <x-heroicon-s-pencil-square class="w-4 h-4"/>
-                                    </button>
-                                    <button wire:click="deleteItem({{ $item->id }})"
-                                            class="p-1.5 rounded-lg text-slate-400 hover:bg-red-50 hover:text-red-600 transition-all duration-200">
-                                        <x-heroicon-s-trash class="w-4 h-4"/>
-                                    </button>
+        {{-- Items List --}}
+        <x-ui-panel title="Items" :subtitle="$items->count() . ' Item(s)'">
+            @if($items->count() > 0)
+                <div class="divide-y divide-[var(--ui-border)]">
+                    @foreach($items as $item)
+                        <div class="py-3 flex items-center justify-between group">
+                            <div class="flex items-center gap-3">
+                                <div class="w-6 h-6 rounded-full flex-shrink-0" style="background-color: {{ $item->color ?? 'var(--ui-muted-10)' }};"></div>
+                                <div>
+                                    <span class="text-sm font-medium text-[var(--ui-secondary)]">{{ $item->name }}</span>
+                                    @if($item->description)
+                                        <p class="text-xs text-[var(--ui-muted)]">{{ $item->description }}</p>
+                                    @endif
                                 </div>
-                            </x-ui-table-cell>
-                        </x-ui-table-row>
-                    @empty
-                        <x-ui-table-row compact="true">
-                            <x-ui-table-cell compact="true" colspan="4" class="text-center py-8">
-                                <div class="flex flex-col items-center justify-center gap-3">
-                                    <x-heroicon-o-square-3-stack-3d class="w-12 h-12 text-slate-300"/>
-                                    <div class="text-sm text-slate-500">Keine Items gefunden</div>
-                                </div>
-                            </x-ui-table-cell>
-                        </x-ui-table-row>
-                    @endforelse
-                </x-ui-table-body>
-            </x-ui-table>
+                            </div>
+                            <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button wire:click="$set('itemId', {{ $item->id }}); $set('itemName', '{{ addslashes($item->name) }}'); $set('itemDescription', '{{ addslashes($item->description ?? '') }}'); $set('itemColor', '{{ $item->color ?? '' }}')"
+                                        @click="editModalOpen = true"
+                                        class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-[var(--ui-muted-10)] hover:text-[var(--ui-secondary)] transition-all">
+                                    <x-heroicon-s-pencil-square class="w-4 h-4"/>
+                                </button>
+                                <button @click="confirmDeleteItem = {{ $item->id }}"
+                                        class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-red-50 hover:text-red-600 transition-all">
+                                    <x-heroicon-s-trash class="w-4 h-4"/>
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Inline Delete Confirmation --}}
+                        <div x-show="confirmDeleteItem === {{ $item->id }}" x-cloak
+                             class="py-2 px-3 bg-red-50 rounded-lg flex items-center justify-between">
+                            <span class="text-sm text-red-700">Wirklich löschen?</span>
+                            <div class="flex items-center gap-2">
+                                <button @click="confirmDeleteItem = null"
+                                        class="text-xs px-2 py-1 rounded bg-white text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                                    Abbrechen
+                                </button>
+                                <button wire:click="deleteItem({{ $item->id }})"
+                                        @click="confirmDeleteItem = null"
+                                        class="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700">
+                                    Löschen
+                                </button>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-12 text-[var(--ui-muted)]">
+                    <x-heroicon-o-square-3-stack-3d class="w-12 h-12 mx-auto mb-4 text-[var(--ui-muted-20)]"/>
+                    <p>Keine Items vorhanden.</p>
+                    <p class="text-sm mt-2">Klicken Sie auf "Item hinzufügen" um ein Item anzulegen.</p>
+                </div>
+            @endif
         </x-ui-panel>
     </x-ui-page-container>
 
-    <!-- Create Item Modal -->
-    <div x-data="{ open: false }" 
-         @open-modal.window="open = true; $wire.resetItemFields()" 
-         @keydown.escape.window="open = false"
-         x-cloak>
-        <x-ui-modal wire:model="open" size="md">
+    {{-- Create Item Modal --}}
+    <div x-show="createModalOpen" x-cloak @keydown.escape.window="createModalOpen = false">
+        <x-ui-modal size="md">
             <x-slot name="header">
                 Neues Item erstellen
             </x-slot>
 
-            <form wire:submit.prevent="createItem">
-                <div class="space-y-4">
-                    <x-ui-input-text 
-                        name="itemName"
-                        label="Name"
-                        wire:model="itemName"
-                        required
-                        :errorKey="'itemName'"
-                    />
-                    <x-ui-input-textarea 
-                        name="itemDescription"
-                        label="Beschreibung"
-                        wire:model="itemDescription"
-                        rows="3"
-                        :errorKey="'itemDescription'"
-                    />
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Farbe</label>
-                        <input type="color"
-                               wire:model="itemColor"
-                               class="w-full h-10 bg-slate-50 border-0 rounded-lg px-3 text-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-purple-500">
-                    </div>
+            <div class="space-y-4">
+                <x-ui-input-text
+                    name="itemName"
+                    label="Name"
+                    wire:model="itemName"
+                    required
+                    :errorKey="'itemName'"
+                />
+                <x-ui-input-textarea
+                    name="itemDescription"
+                    label="Beschreibung"
+                    wire:model="itemDescription"
+                    rows="3"
+                    :errorKey="'itemDescription'"
+                />
+                <div>
+                    <label class="block text-sm font-medium text-[var(--ui-secondary)] mb-1">Farbe</label>
+                    <input type="color"
+                           wire:model="itemColor"
+                           class="w-full h-10 bg-[var(--ui-muted-5)] border-0 rounded-lg px-3 text-sm ring-1 ring-[var(--ui-border)] focus:ring-2 focus:ring-[var(--ui-primary)]">
                 </div>
-            </form>
+            </div>
 
             <x-slot name="footer">
-                <div class="d-flex justify-end gap-2">
-                    <x-ui-button 
-                        type="button" 
-                        variant="secondary-outline" 
-                        @click="open = false"
+                <div class="flex justify-end gap-2">
+                    <x-ui-button
+                        type="button"
+                        variant="secondary-outline"
+                        @click="createModalOpen = false"
                     >
                         Abbrechen
                     </x-ui-button>
-                    <x-ui-button 
-                        type="button" 
-                        variant="primary" 
+                    <x-ui-button
+                        type="button"
+                        variant="primary"
                         wire:click="createItem"
-                        @click="open = false"
+                        @click="createModalOpen = false"
                     >
                         Item erstellen
                     </x-ui-button>
@@ -217,63 +241,50 @@
         </x-ui-modal>
     </div>
 
-    <!-- Edit Item Modal -->
-    <div x-data="{ 
-            open: false,
-            item: null
-         }" 
-         @open-edit-modal.window="open = true; item = $event.detail.item"
-         @keydown.escape.window="open = false"
-         x-cloak>
-        <x-ui-modal wire:model="open" size="md">
+    {{-- Edit Item Modal --}}
+    <div x-show="editModalOpen" x-cloak @keydown.escape.window="editModalOpen = false">
+        <x-ui-modal size="md">
             <x-slot name="header">
                 Item bearbeiten
             </x-slot>
 
-            <form wire:submit.prevent="updateItem" x-init="$watch('item', value => { 
-                $wire.set('itemId', value.id);
-                $wire.set('itemName', value.name);
-                $wire.set('itemDescription', value.description);
-                $wire.set('itemColor', value.color);
-            })">
-                <div class="space-y-4">
-                    <x-ui-input-text 
-                        name="itemName"
-                        label="Name"
-                        wire:model="itemName"
-                        required
-                        :errorKey="'itemName'"
-                    />
-                    <x-ui-input-textarea 
-                        name="itemDescription"
-                        label="Beschreibung"
-                        wire:model="itemDescription"
-                        rows="3"
-                        :errorKey="'itemDescription'"
-                    />
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Farbe</label>
-                        <input type="color"
-                               wire:model="itemColor"
-                               class="w-full h-10 bg-slate-50 border-0 rounded-lg px-3 text-sm ring-1 ring-slate-200 focus:ring-2 focus:ring-purple-500">
-                    </div>
+            <div class="space-y-4">
+                <x-ui-input-text
+                    name="itemName"
+                    label="Name"
+                    wire:model="itemName"
+                    required
+                    :errorKey="'itemName'"
+                />
+                <x-ui-input-textarea
+                    name="itemDescription"
+                    label="Beschreibung"
+                    wire:model="itemDescription"
+                    rows="3"
+                    :errorKey="'itemDescription'"
+                />
+                <div>
+                    <label class="block text-sm font-medium text-[var(--ui-secondary)] mb-1">Farbe</label>
+                    <input type="color"
+                           wire:model="itemColor"
+                           class="w-full h-10 bg-[var(--ui-muted-5)] border-0 rounded-lg px-3 text-sm ring-1 ring-[var(--ui-border)] focus:ring-2 focus:ring-[var(--ui-primary)]">
                 </div>
-            </form>
+            </div>
 
             <x-slot name="footer">
-                <div class="d-flex justify-end gap-2">
-                    <x-ui-button 
-                        type="button" 
-                        variant="secondary-outline" 
-                        @click="open = false"
+                <div class="flex justify-end gap-2">
+                    <x-ui-button
+                        type="button"
+                        variant="secondary-outline"
+                        @click="editModalOpen = false"
                     >
                         Abbrechen
                     </x-ui-button>
-                    <x-ui-button 
-                        type="button" 
-                        variant="primary" 
+                    <x-ui-button
+                        type="button"
+                        variant="primary"
                         wire:click="updateItem"
-                        @click="open = false"
+                        @click="editModalOpen = false"
                     >
                         Speichern
                     </x-ui-button>
