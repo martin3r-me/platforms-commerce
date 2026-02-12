@@ -175,17 +175,24 @@ class CommerceServiceProvider extends ServiceProvider
         
         /**
          * SCHRITT 6: Livewire Components registrieren
-         * 
+         *
          * Registriert alle Livewire-Komponenten automatisch.
-         * 
+         *
          * Pattern:
          * - Datei: src/Livewire/Articles/Index.php
          * - Alias: commerce.articles.index
-         * 
+         *
          * Verwendung:
          * <livewire:commerce.articles.index />
          */
         $this->registerLivewireComponents();
+
+        /**
+         * SCHRITT 7: LLM Tools registrieren
+         *
+         * Registriert alle LLM-Tools für AI-Agenten.
+         */
+        $this->registerTools();
     }
 
     /**
@@ -249,6 +256,35 @@ class CommerceServiceProvider extends ServiceProvider
 
             // Livewire-Komponente registrieren
             Livewire::component($alias, $class);
+        }
+    }
+
+    /**
+     * Registriert LLM-Tools für AI-Agenten
+     *
+     * Diese Tools ermöglichen AI-Agenten die Verwaltung von Commerce-Daten
+     * wie Artikel-Typen über die ToolRegistry.
+     *
+     * @return void
+     */
+    protected function registerTools(): void
+    {
+        try {
+            $registry = resolve(\Platform\Core\Tools\ToolRegistry::class);
+
+            // Article Types Tools
+            $registry->register(new \Platform\Commerce\Tools\ListArticleTypesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticleTypeTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticleTypeTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticleTypeTool());
+
+            // Products Tools
+            $registry->register(new \Platform\Commerce\Tools\ListProductsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductTool());
+        } catch (\Throwable $e) {
+            \Log::warning('Commerce: Tool-Registrierung fehlgeschlagen', ['error' => $e->getMessage()]);
         }
     }
 }
