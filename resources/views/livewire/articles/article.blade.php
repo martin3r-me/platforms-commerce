@@ -157,6 +157,17 @@ x-init="$nextTick(() => initIntersectionObserver())">
                                 <div class="text-sm font-medium text-green-800">{{ $article->category->name }}</div>
                             </div>
                         @endif
+                        @if($article->articleType)
+                            <div class="p-3 rounded-lg border" style="background-color: {{ $article->articleType->color ?? '#f3f4f6' }}15; border-color: {{ $article->articleType->color ?? '#e5e7eb' }}40">
+                                <div class="text-xs font-medium" style="color: {{ $article->articleType->color ?? '#6b7280' }}">Artikel-Typ</div>
+                                <div class="text-sm font-medium flex items-center gap-2" style="color: {{ $article->articleType->color ?? '#374151' }}">
+                                    @if($article->articleType->color)
+                                        <span class="w-3 h-3 rounded-full" style="background-color: {{ $article->articleType->color }}"></span>
+                                    @endif
+                                    {{ $article->articleType->name }}
+                                </div>
+                            </div>
+                        @endif
                         @if($article->stock_level !== null)
                             <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg">
                                 <div class="text-xs text-purple-600 font-medium">Lagerbestand</div>
@@ -293,6 +304,17 @@ x-init="$nextTick(() => initIntersectionObserver())">
                             nullLabel="Keine Kategorie"
                             wire:model.live="article.category_id"
                             :errorKey="'article.category_id'"
+                        />
+                        <x-ui-input-select
+                            name="article.commerce_article_type_id"
+                            label="Artikel-Typ"
+                            :options="$articleTypes"
+                            optionValue="id"
+                            optionLabel="name"
+                            :nullable="true"
+                            nullLabel="Kein Typ"
+                            wire:model.live="article.commerce_article_type_id"
+                            :errorKey="'article.commerce_article_type_id'"
                         />
                         <x-ui-input-textarea 
                             name="article.product_highlights"

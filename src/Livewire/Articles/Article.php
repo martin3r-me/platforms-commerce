@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Platform\Commerce\Models\CommerceArticle;
 use Platform\Commerce\Models\CommerceArticleCategory;
 use Platform\Commerce\Models\CommerceTaxCategory;
+use Platform\Commerce\Models\CommerceArticleType;
 use Platform\Commerce\Models\CommerceAttributeSet;
 use Platform\Commerce\Models\CommerceArticleNetPrice;
 
@@ -20,6 +21,7 @@ class Article extends Component
     public $netPrice;
     public $valid_from = null;
     public $taxCategories;
+    public $articleTypes;
 
     protected function rules()
     {
@@ -53,6 +55,7 @@ class Article extends Component
         'article.recyclable' => 'boolean',
         'article.category_id' => 'nullable|exists:commerce_article_categories,id',
         'article.commerce_tax_category_id' => 'nullable|exists:commerce_tax_categories,id',
+        'article.commerce_article_type_id' => 'nullable|exists:commerce_article_types,id',
         'article.tags' => 'nullable|json',
         'article.is_digital' => 'boolean',
         'article.is_physical' => 'boolean',
@@ -94,10 +97,14 @@ class Article extends Component
             'attributeSetItems',
             'category',
             'taxCategory',
+            'articleType',
             'creator'
         ]);
         $this->categories = CommerceArticleCategory::all();
         $this->taxCategories = CommerceTaxCategory::all();
+        $this->articleTypes = CommerceArticleType::where('team_id', Auth::user()->currentTeam->id)
+            ->orderBy('name')
+            ->get();
 
         $this->teamAttributeSets = CommerceAttributeSet::with('attributeSetItems')
             ->where('team_id', Auth::user()->currentTeam->id)

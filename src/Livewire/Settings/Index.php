@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Platform\Commerce\Models\CommerceTaxCategory;
 use Platform\Commerce\Models\CommerceSalesContext;
 use Platform\Commerce\Models\CommerceTaxRule;
+use Platform\Commerce\Models\CommerceArticleType;
 use Platform\Commerce\Services\TaxRuleManager;
 
 class Index extends Component
@@ -19,6 +20,11 @@ class Index extends Component
     public $context_name;
     public $context_description;
 
+    // Article Type fields
+    public $type_name;
+    public $type_description;
+    public $type_color;
+
     // Edit fields
     public $editCategoryId;
     public $editCategoryName;
@@ -27,6 +33,11 @@ class Index extends Component
     public $editContextId;
     public $editContextName;
     public $editContextDescription;
+
+    public $editTypeId;
+    public $editTypeName;
+    public $editTypeDescription;
+    public $editTypeColor;
 
     // Data
     public $matrix = [];
@@ -55,6 +66,13 @@ class Index extends Component
     protected function getTeamContexts()
     {
         return CommerceSalesContext::where('team_id', Auth::user()->currentTeam->id)
+            ->orderBy('name')
+            ->get();
+    }
+
+    protected function getTeamArticleTypes()
+    {
+        return CommerceArticleType::where('team_id', Auth::user()->currentTeam->id)
             ->orderBy('name')
             ->get();
     }
@@ -191,11 +209,76 @@ class Index extends Component
         }
     }
 
+    // ── Article Type CRUD ──
+
+    public function saveArticleType()
+    {
+        $this->validate([
+            'type_name' => 'required|string|max:255',
+            'type_description' => 'nullable|string|max:1000',
+            'type_color' => 'nullable|string|max:7',
+        ]);
+
+        CommerceArticleType::create([
+            'name' => $this->type_name,
+            'description' => $this->type_description,
+            'color' => $this->type_color,
+            'user_id' => Auth::user()->id,
+            'team_id' => Auth::user()->currentTeam->id,
+        ]);
+
+        $this->reset(['type_name', 'type_description', 'type_color']);
+        $this->dispatch('notify', type: 'success', message: 'Artikel-Typ wurde angelegt.');
+    }
+
+    public function editArticleType($id)
+    {
+        $type = CommerceArticleType::find($id);
+        if ($type) {
+            $this->editTypeId = $type->id;
+            $this->editTypeName = $type->name;
+            $this->editTypeDescription = $type->description;
+            $this->editTypeColor = $type->color;
+            $this->dispatch('open-edit-type-modal');
+        }
+    }
+
+    public function updateArticleType()
+    {
+        $this->validate([
+            'editTypeName' => 'required|string|max:255',
+            'editTypeDescription' => 'nullable|string|max:1000',
+            'editTypeColor' => 'nullable|string|max:7',
+        ]);
+
+        $type = CommerceArticleType::find($this->editTypeId);
+        if ($type) {
+            $type->update([
+                'name' => $this->editTypeName,
+                'description' => $this->editTypeDescription,
+                'color' => $this->editTypeColor,
+            ]);
+            $this->dispatch('notify', type: 'success', message: 'Artikel-Typ wurde aktualisiert.');
+        }
+
+        $this->reset(['editTypeId', 'editTypeName', 'editTypeDescription', 'editTypeColor']);
+    }
+
+    public function deleteArticleType($id)
+    {
+        $type = CommerceArticleType::find($id);
+        if ($type) {
+            $type->delete();
+            $this->dispatch('notify', type: 'success', message: 'Artikel-Typ wurde gelöscht.');
+        }
+    }
+
     public function render()
     {
         return view('commerce::livewire.settings.index', [
             'categories' => $this->getTeamCategories(),
             'contexts' => $this->getTeamContexts(),
+            'articleTypes' => $this->getTeamArticleTypes(),
         ])->layout('platform::layouts.app');
     }
 }

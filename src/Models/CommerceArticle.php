@@ -50,6 +50,7 @@ class CommerceArticle extends Model
         'recyclable',
         'category_id',
         'commerce_tax_category_id',
+        'commerce_article_type_id',
         'tags',
         'is_digital',
         'is_physical',
@@ -140,6 +141,11 @@ class CommerceArticle extends Model
     public function taxCategory()
     {
         return $this->belongsTo(CommerceTaxCategory::class, 'commerce_tax_category_id');
+    }
+
+    public function articleType()
+    {
+        return $this->belongsTo(CommerceArticleType::class, 'commerce_article_type_id');
     }
 
     public function creator()

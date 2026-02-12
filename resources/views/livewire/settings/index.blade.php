@@ -9,11 +9,13 @@
 --}}
 
 <x-ui-page x-data="{
-    selectedTab: 'tax',
+    selectedTab: 'articletypes',
     editCategoryOpen: false,
     editContextOpen: false,
+    editTypeOpen: false,
     confirmDeleteCategory: null,
     confirmDeleteContext: null,
+    confirmDeleteType: null,
     scrollToSection(sectionId) {
         const section = document.getElementById(sectionId);
         if (section) {
@@ -21,7 +23,7 @@
         }
         this.selectedTab = sectionId;
     }
-}" @open-edit-category-modal.window="editCategoryOpen = true" @open-edit-context-modal.window="editContextOpen = true">
+}" @open-edit-category-modal.window="editCategoryOpen = true" @open-edit-context-modal.window="editContextOpen = true" @open-edit-type-modal.window="editTypeOpen = true">
     <x-slot name="navbar">
         <x-ui-page-navbar title="Einstellungen" icon="heroicon-o-cog-6-tooth" />
     </x-slot>
@@ -32,6 +34,11 @@
                 <div>
                     <h3 class="text-sm font-bold text-[var(--ui-secondary)] uppercase tracking-wider mb-3">Bereiche</h3>
                     <div class="space-y-2">
+                        <button @click="scrollToSection('articletypes')"
+                                :class="{ 'bg-[var(--ui-primary-light)] text-[var(--ui-primary)]': selectedTab === 'articletypes' }"
+                                class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all">
+                            Artikel-Typen
+                        </button>
                         <button @click="scrollToSection('tax')"
                                 :class="{ 'bg-[var(--ui-primary-light)] text-[var(--ui-primary)]': selectedTab === 'tax' }"
                                 class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all">
@@ -54,6 +61,103 @@
     </x-slot>
 
     <x-ui-page-container spacing="space-y-8">
+        {{-- Artikel-Typen --}}
+        <section id="articletypes" class="scroll-mt-4">
+            <x-ui-panel title="Artikel-Typen">
+                <div class="mb-6 bg-[var(--ui-muted-5)] rounded-lg p-4 text-sm text-[var(--ui-muted)]">
+                    <p class="font-medium text-[var(--ui-secondary)] mb-2">Über Artikel-Typen</p>
+                    <p class="mb-2">Artikel-Typen ermöglichen es Ihnen, Artikel in verschiedene Kategorien einzuteilen (z.B. Food, Non-Food, Dienstleistungen).</p>
+                    <ul class="list-disc list-inside space-y-1 text-sm">
+                        <li>Erstellen Sie Typen für verschiedene Artikelgruppen</li>
+                        <li>Weisen Sie Artikeln den passenden Typ zu</li>
+                        <li>Produkte erben den Typ vom zugewiesenen Artikel</li>
+                    </ul>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {{-- Formular --}}
+                    <div class="space-y-4">
+                        <x-ui-input-text
+                            name="type_name"
+                            label="Name"
+                            wire:model="type_name"
+                            placeholder="z.B. Food, Non-Food, Dienstleistung..."
+                            required
+                            :errorKey="'type_name'"
+                        />
+                        <x-ui-input-textarea
+                            name="type_description"
+                            label="Beschreibung"
+                            wire:model="type_description"
+                            rows="2"
+                            placeholder="Beschreibung des Artikel-Typs..."
+                            :errorKey="'type_description'"
+                        />
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--ui-secondary)] mb-1">Farbe</label>
+                            <input type="color"
+                                   wire:model="type_color"
+                                   class="h-10 w-full rounded-lg cursor-pointer border border-[var(--ui-border)]">
+                        </div>
+                        <x-ui-button wire:click="saveArticleType" variant="primary">
+                            Typ anlegen
+                        </x-ui-button>
+                    </div>
+
+                    {{-- Bestehende Typen --}}
+                    <div class="bg-[var(--ui-muted-5)] rounded-lg p-4">
+                        <h3 class="text-sm font-medium text-[var(--ui-secondary)] mb-3">Bestehende Artikel-Typen</h3>
+                        <div class="divide-y divide-[var(--ui-border)]">
+                            @forelse($articleTypes as $type)
+                                <div class="py-2 group">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            @if($type->color)
+                                                <span class="w-4 h-4 rounded-full" style="background-color: {{ $type->color }}"></span>
+                                            @endif
+                                            <span class="text-sm font-medium text-[var(--ui-secondary)]">{{ $type->name }}</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button wire:click="editArticleType({{ $type->id }})"
+                                                    class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-[var(--ui-muted-10)] hover:text-[var(--ui-secondary)] transition-all">
+                                                <x-heroicon-s-pencil-square class="w-4 h-4"/>
+                                            </button>
+                                            <button @click="confirmDeleteType = {{ $type->id }}"
+                                                    class="p-1.5 rounded-lg text-[var(--ui-muted)] hover:bg-red-50 hover:text-red-600 transition-all">
+                                                <x-heroicon-s-trash class="w-4 h-4"/>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    @if($type->description)
+                                        <p class="text-sm text-[var(--ui-muted)] mt-1">{{ $type->description }}</p>
+                                    @endif
+                                </div>
+
+                                {{-- Inline Delete Confirmation --}}
+                                <div x-show="confirmDeleteType === {{ $type->id }}" x-cloak
+                                     class="py-2 px-3 bg-red-50 rounded-lg flex items-center justify-between">
+                                    <span class="text-sm text-red-700">Wirklich löschen?</span>
+                                    <div class="flex items-center gap-2">
+                                        <button @click="confirmDeleteType = null"
+                                                class="text-xs px-2 py-1 rounded bg-white text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                                            Abbrechen
+                                        </button>
+                                        <button wire:click="deleteArticleType({{ $type->id }})"
+                                                @click="confirmDeleteType = null"
+                                                class="text-xs px-2 py-1 rounded bg-red-600 text-white hover:bg-red-700">
+                                            Löschen
+                                        </button>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="py-2 text-sm text-[var(--ui-muted)]">Keine Artikel-Typen vorhanden.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
+            </x-ui-panel>
+        </section>
+
         {{-- Steuerkategorien --}}
         <section id="tax" class="scroll-mt-4">
             <x-ui-panel title="Steuerkategorien">
@@ -337,6 +441,49 @@
                         Abbrechen
                     </x-ui-button>
                     <x-ui-button type="button" variant="primary" wire:click="updateContext" @click="editContextOpen = false">
+                        Speichern
+                    </x-ui-button>
+                </div>
+            </x-slot>
+        </x-ui-modal>
+    </div>
+
+    {{-- Edit Article Type Modal --}}
+    <div x-show="editTypeOpen" x-cloak @keydown.escape.window="editTypeOpen = false">
+        <x-ui-modal size="md">
+            <x-slot name="header">
+                Artikel-Typ bearbeiten
+            </x-slot>
+
+            <div class="space-y-4">
+                <x-ui-input-text
+                    name="editTypeName"
+                    label="Name"
+                    wire:model="editTypeName"
+                    required
+                    :errorKey="'editTypeName'"
+                />
+                <x-ui-input-textarea
+                    name="editTypeDescription"
+                    label="Beschreibung"
+                    wire:model="editTypeDescription"
+                    rows="2"
+                    :errorKey="'editTypeDescription'"
+                />
+                <div>
+                    <label class="block text-sm font-medium text-[var(--ui-secondary)] mb-1">Farbe</label>
+                    <input type="color"
+                           wire:model="editTypeColor"
+                           class="h-10 w-full rounded-lg cursor-pointer border border-[var(--ui-border)]">
+                </div>
+            </div>
+
+            <x-slot name="footer">
+                <div class="d-flex justify-end gap-2">
+                    <x-ui-button type="button" variant="secondary-outline" @click="editTypeOpen = false">
+                        Abbrechen
+                    </x-ui-button>
+                    <x-ui-button type="button" variant="primary" wire:click="updateArticleType" @click="editTypeOpen = false">
                         Speichern
                     </x-ui-button>
                 </div>

@@ -35,7 +35,8 @@ class Slot extends Component
 
         // Artikel für das Team laden
         if ($product && $product->team_id) {
-            $this->articles = \Platform\Commerce\Models\CommerceArticle::where('team_id', $product->team_id)
+            $this->articles = \Platform\Commerce\Models\CommerceArticle::with('articleType')
+                ->where('team_id', $product->team_id)
                 ->orderBy('name')
                 ->get();
         } else {

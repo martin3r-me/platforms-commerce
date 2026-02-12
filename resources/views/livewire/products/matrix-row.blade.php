@@ -56,11 +56,27 @@
                     @foreach($articles as $article)
                         <option wire:key="select-article-{{ $article->id }}-for-variant-{{ $variant->id }}"
                                 value="{{ $article->id }}">
-                            {{ $article->name }}
+                            {{ $article->name }}@if($article->articleType) ({{ $article->articleType->name }})@endif
                         </option>
                     @endforeach
                 @endif
             </select>
+            @if($variant->commerce_article_id && $articles)
+                @php
+                    $selectedArticle = $articles->find($variant->commerce_article_id);
+                @endphp
+                @if($selectedArticle && $selectedArticle->articleType)
+                    <div class="mt-2">
+                        <span class="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-xs font-medium"
+                              style="background-color: {{ $selectedArticle->articleType->color ?? '#e5e7eb' }}20; color: {{ $selectedArticle->articleType->color ?? '#6b7280' }}">
+                            @if($selectedArticle->articleType->color)
+                                <span class="w-2 h-2 rounded-full" style="background-color: {{ $selectedArticle->articleType->color }}"></span>
+                            @endif
+                            {{ $selectedArticle->articleType->name }}
+                        </span>
+                    </div>
+                @endif
+            @endif
         </div>
     </div>
 </div>
