@@ -278,6 +278,12 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\UpdateArticleTypeTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteArticleTypeTool());
 
+            // Articles Tools (Basiseinheiten mit Preis/SKU)
+            $registry->register(new \Platform\Commerce\Tools\ListArticlesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticleTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticleTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticleTool());
+
             // Products Tools
             $registry->register(new \Platform\Commerce\Tools\ListProductsTool());
             $registry->register(new \Platform\Commerce\Tools\CreateProductTool());
