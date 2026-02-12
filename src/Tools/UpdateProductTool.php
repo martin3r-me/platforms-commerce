@@ -47,10 +47,6 @@ class UpdateProductTool implements ToolContract, ToolMetadataContract
                     'type' => 'string',
                     'description' => 'Optional: Neue Beschreibung ("" zum Leeren).',
                 ],
-                'price' => [
-                    'type' => 'number',
-                    'description' => 'Optional: Neuer Preis (null zum Leeren).',
-                ],
                 'commerce_product_board_slot_id' => [
                     'type' => 'integer',
                     'description' => 'Optional: Neue Board-Slot-ID (null zum Leeren).',
@@ -129,10 +125,6 @@ class UpdateProductTool implements ToolContract, ToolMetadataContract
                 $update['description'] = $d === '' ? null : $d;
             }
 
-            if (array_key_exists('price', $arguments)) {
-                $update['price'] = $arguments['price'];
-            }
-
             if (array_key_exists('commerce_product_board_slot_id', $arguments)) {
                 $slotId = $arguments['commerce_product_board_slot_id'];
                 $update['commerce_product_board_slot_id'] = ($slotId === null || $slotId === '' || $slotId === 0)
@@ -163,7 +155,6 @@ class UpdateProductTool implements ToolContract, ToolMetadataContract
                 'uuid' => $product->uuid,
                 'name' => $product->name,
                 'description' => $product->description,
-                'price' => $product->price,
                 'commerce_product_board_slot_id' => $product->commerce_product_board_slot_id,
                 'price_deviation_type' => $product->price_deviation_type,
                 'price_deviation_value' => $product->price_deviation_value,

@@ -283,6 +283,35 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\CreateProductTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateProductTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteProductTool());
+
+            // Product-Slot Attachments (verknüpft Slots mit Produkten)
+            $registry->register(new \Platform\Commerce\Tools\ListProductSlotAttachmentsTool());
+            $registry->register(new \Platform\Commerce\Tools\AttachProductSlotTool());
+            $registry->register(new \Platform\Commerce\Tools\DetachProductSlotTool());
+
+            // Product Slots (Dimensions-Sets wie "Größe & Farbe")
+            $registry->register(new \Platform\Commerce\Tools\ListProductSlotsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductSlotTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotTool());
+
+            // Product Slot Dimensions (z.B. "Größe", "Farbe")
+            $registry->register(new \Platform\Commerce\Tools\ListProductSlotDimensionsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductSlotDimensionTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotDimensionTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotDimensionTool());
+
+            // Product Slot Dimension Values (z.B. "S", "M", "L", "Rot", "Blau")
+            $registry->register(new \Platform\Commerce\Tools\ListProductSlotDimensionValuesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductSlotDimensionValueTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotDimensionValueTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotDimensionValueTool());
+
+            // Product Slot Variants (verknüpft Artikel mit Dimensions-Kombinationen)
+            $registry->register(new \Platform\Commerce\Tools\ListProductSlotVariantsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductSlotVariantTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotVariantTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotVariantTool());
         } catch (\Throwable $e) {
             \Log::warning('Commerce: Tool-Registrierung fehlgeschlagen', ['error' => $e->getMessage()]);
         }

@@ -24,7 +24,7 @@ class ListProductsTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'GET /commerce/products - Listet Produkte (id, uuid, name, description, price). Nutze dieses Tool bevor du product_id setzt. Unterstützt filters/search/sort/limit/offset.';
+        return 'GET /commerce/products - Listet Produkte (id, uuid, name, description). Nutze dieses Tool bevor du product_id setzt. Unterstützt filters/search/sort/limit/offset.';
     }
 
     public function getSchema(): array
@@ -77,9 +77,9 @@ class ListProductsTool implements ToolContract, ToolMetadataContract
                 $q->where('commerce_product_board_slot_id', (int)$arguments['commerce_product_board_slot_id']);
             }
 
-            $this->applyStandardFilters($q, $arguments, ['team_id', 'name', 'price', 'commerce_product_board_slot_id', 'created_at']);
+            $this->applyStandardFilters($q, $arguments, ['team_id', 'name', 'commerce_product_board_slot_id', 'created_at']);
             $this->applyStandardSearch($q, $arguments, ['name', 'description']);
-            $this->applyStandardSort($q, $arguments, ['name', 'price', 'order', 'id', 'created_at'], 'name', 'asc');
+            $this->applyStandardSort($q, $arguments, ['name', 'order', 'id', 'created_at'], 'name', 'asc');
 
             $result = $this->applyStandardPaginationResult($q, $arguments);
             $items = $result['data']->map(fn ($product) => [
@@ -87,7 +87,6 @@ class ListProductsTool implements ToolContract, ToolMetadataContract
                 'uuid' => $product->uuid,
                 'name' => $product->name,
                 'description' => $product->description,
-                'price' => $product->price,
                 'commerce_product_board_slot_id' => $product->commerce_product_board_slot_id,
                 'price_deviation_type' => $product->price_deviation_type,
                 'price_deviation_value' => $product->price_deviation_value,

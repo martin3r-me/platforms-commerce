@@ -41,10 +41,6 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                     'type' => 'string',
                     'description' => 'Optional: Beschreibung des Produkts.',
                 ],
-                'price' => [
-                    'type' => 'number',
-                    'description' => 'Optional: Preis des Produkts.',
-                ],
                 'commerce_product_board_slot_id' => [
                     'type' => 'integer',
                     'description' => 'Optional: Board-Slot-ID.',
@@ -102,7 +98,6 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                 'description' => (array_key_exists('description', $arguments) && $arguments['description'] !== '')
                     ? (string)$arguments['description']
                     : null,
-                'price' => array_key_exists('price', $arguments) ? $arguments['price'] : null,
                 'commerce_product_board_slot_id' => array_key_exists('commerce_product_board_slot_id', $arguments)
                     ? (int)$arguments['commerce_product_board_slot_id']
                     : null,
@@ -120,7 +115,6 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                 'uuid' => $product->uuid,
                 'name' => $product->name,
                 'description' => $product->description,
-                'price' => $product->price,
                 'commerce_product_board_slot_id' => $product->commerce_product_board_slot_id,
                 'price_deviation_type' => $product->price_deviation_type,
                 'price_deviation_value' => $product->price_deviation_value,
