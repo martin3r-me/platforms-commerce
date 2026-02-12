@@ -45,14 +45,6 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                     'type' => 'integer',
                     'description' => 'Optional: Board-Slot-ID.',
                 ],
-                'price_deviation_type' => [
-                    'type' => 'string',
-                    'description' => 'Optional: Typ der Preisabweichung.',
-                ],
-                'price_deviation_value' => [
-                    'type' => 'number',
-                    'description' => 'Optional: Wert der Preisabweichung.',
-                ],
                 'order' => [
                     'type' => 'integer',
                     'description' => 'Optional: Sortierreihenfolge.',
@@ -91,7 +83,7 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                 return ToolResult::error('VALIDATION_ERROR', 'name ist erforderlich.');
             }
 
-            $product = CommerceProduct::create([
+            $data = [
                 'team_id' => $team->id,
                 'user_id' => $context->user->id,
                 'name' => $name,
@@ -101,14 +93,10 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                 'commerce_product_board_slot_id' => array_key_exists('commerce_product_board_slot_id', $arguments)
                     ? (int)$arguments['commerce_product_board_slot_id']
                     : null,
-                'price_deviation_type' => array_key_exists('price_deviation_type', $arguments)
-                    ? (string)$arguments['price_deviation_type']
-                    : null,
-                'price_deviation_value' => array_key_exists('price_deviation_value', $arguments)
-                    ? $arguments['price_deviation_value']
-                    : null,
                 'order' => array_key_exists('order', $arguments) ? (int)$arguments['order'] : null,
-            ]);
+            ];
+
+            $product = CommerceProduct::create($data);
 
             return ToolResult::success([
                 'id' => $product->id,
@@ -116,8 +104,6 @@ class CreateProductTool implements ToolContract, ToolMetadataContract
                 'name' => $product->name,
                 'description' => $product->description,
                 'commerce_product_board_slot_id' => $product->commerce_product_board_slot_id,
-                'price_deviation_type' => $product->price_deviation_type,
-                'price_deviation_value' => $product->price_deviation_value,
                 'order' => $product->order,
                 'team_id' => $product->team_id,
                 'message' => 'Produkt erfolgreich erstellt.',

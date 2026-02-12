@@ -51,14 +51,6 @@ class UpdateProductTool implements ToolContract, ToolMetadataContract
                     'type' => 'integer',
                     'description' => 'Optional: Neue Board-Slot-ID (null zum Leeren).',
                 ],
-                'price_deviation_type' => [
-                    'type' => 'string',
-                    'description' => 'Optional: Neuer Typ der Preisabweichung ("" zum Leeren).',
-                ],
-                'price_deviation_value' => [
-                    'type' => 'number',
-                    'description' => 'Optional: Neuer Wert der Preisabweichung (null zum Leeren).',
-                ],
                 'order' => [
                     'type' => 'integer',
                     'description' => 'Optional: Neue Sortierreihenfolge.',
@@ -132,15 +124,6 @@ class UpdateProductTool implements ToolContract, ToolMetadataContract
                     : (int)$slotId;
             }
 
-            if (array_key_exists('price_deviation_type', $arguments)) {
-                $pdt = (string)($arguments['price_deviation_type'] ?? '');
-                $update['price_deviation_type'] = $pdt === '' ? null : $pdt;
-            }
-
-            if (array_key_exists('price_deviation_value', $arguments)) {
-                $update['price_deviation_value'] = $arguments['price_deviation_value'];
-            }
-
             if (array_key_exists('order', $arguments)) {
                 $update['order'] = $arguments['order'] !== null ? (int)$arguments['order'] : null;
             }
@@ -156,8 +139,6 @@ class UpdateProductTool implements ToolContract, ToolMetadataContract
                 'name' => $product->name,
                 'description' => $product->description,
                 'commerce_product_board_slot_id' => $product->commerce_product_board_slot_id,
-                'price_deviation_type' => $product->price_deviation_type,
-                'price_deviation_value' => $product->price_deviation_value,
                 'order' => $product->order,
                 'team_id' => $product->team_id,
                 'message' => 'Produkt erfolgreich aktualisiert.',

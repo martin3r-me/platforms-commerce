@@ -88,8 +88,6 @@ class ListProductsTool implements ToolContract, ToolMetadataContract
                 'name' => $product->name,
                 'description' => $product->description,
                 'commerce_product_board_slot_id' => $product->commerce_product_board_slot_id,
-                'price_deviation_type' => $product->price_deviation_type,
-                'price_deviation_value' => $product->price_deviation_value,
                 'order' => $product->order,
                 'team_id' => $product->team_id,
             ])->values()->toArray();
