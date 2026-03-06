@@ -21,11 +21,9 @@ return new class extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade')
                 ->index('slot_dep_slot_id');
-            $table->foreignId('commerce_product_slot_variant_id')
-                ->constrained('commerce_product_slot_variants', 'id')
-                ->onDelete('cascade')
-                ->onUpdate('cascade')
-                ->index('slot_dep_variant_id');
+            $table->foreignId('commerce_product_slot_variant_id');
+            $table->foreign('commerce_product_slot_variant_id', 'fk_slot_dep_variant')->references('id')->on('commerce_product_slot_variants')->onDelete('cascade')->onUpdate('cascade');
+            $table->index('commerce_product_slot_variant_id', 'slot_dep_variant_id');
             $table->timestamps();
         });
     }
