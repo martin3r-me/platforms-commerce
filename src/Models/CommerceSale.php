@@ -16,6 +16,7 @@ class CommerceSale extends Model
     protected $fillable = [
         'user_id',
         'team_id',
+        'commerce_sales_context_id',
         'total_amount',
         'paid_at',
         'status',
@@ -23,6 +24,7 @@ class CommerceSale extends Model
 
     protected $casts = [
         'paid_at' => 'datetime',
+        'status' => \Platform\Commerce\Enums\SaleStatus::class,
     ];
 
     protected static function booted(): void
@@ -49,6 +51,11 @@ class CommerceSale extends Model
     public function items()
     {
         return $this->hasMany(CommerceSaleItem::class, 'commerce_sale_id');
+    }
+
+    public function salesContext()
+    {
+        return $this->belongsTo(CommerceSalesContext::class, 'commerce_sales_context_id');
     }
 }
 

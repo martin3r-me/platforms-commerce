@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Platform\Commerce\Enums\PriceType;
 
 class CommerceArticlePrice extends Model
 {
@@ -17,6 +18,8 @@ class CommerceArticlePrice extends Model
         'commerce_article_id',
         'commerce_sales_context_id',
         'commerce_tax_category_id',
+        'commerce_price_list_id',
+        'price_type',
         'net_price',
         'gross_price',
         'tax_rate',
@@ -27,6 +30,7 @@ class CommerceArticlePrice extends Model
     ];
 
     protected $casts = [
+        'price_type' => PriceType::class,
         'valid_from' => 'datetime',
         'valid_until' => 'datetime',
     ];
@@ -55,6 +59,11 @@ class CommerceArticlePrice extends Model
     public function taxCategory()
     {
         return $this->belongsTo(CommerceTaxCategory::class, 'commerce_tax_category_id');
+    }
+
+    public function priceList()
+    {
+        return $this->belongsTo(CommercePriceList::class, 'commerce_price_list_id');
     }
 }
 

@@ -17,6 +17,7 @@ class CommerceArticle extends Model
         'user_id',
         'team_id',
         'name',
+        'status',
         'description',
         'color',
         'sku',
@@ -51,6 +52,9 @@ class CommerceArticle extends Model
         'category_id',
         'commerce_tax_category_id',
         'commerce_article_type_id',
+        'commerce_sales_unit_id',
+        'commerce_storage_unit_id',
+        'sales_to_storage_factor',
         'tags',
         'is_digital',
         'is_physical',
@@ -64,6 +68,7 @@ class CommerceArticle extends Model
     ];
 
     protected $casts = [
+        'status' => \Platform\Commerce\Enums\ArticleStatus::class,
         'tags' => 'array',
         'product_highlights' => 'array',
         'is_fragile' => 'boolean',
@@ -161,6 +166,41 @@ class CommerceArticle extends Model
     public function team()
     {
         return $this->belongsTo(\App\Models\Team::class, 'team_id');
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', \Platform\Commerce\Enums\ArticleStatus::Published);
+    }
+
+    public function scopeDraft($query)
+    {
+        return $query->where('status', \Platform\Commerce\Enums\ArticleStatus::Draft);
+    }
+
+    public function scopeArchived($query)
+    {
+        return $query->where('status', \Platform\Commerce\Enums\ArticleStatus::Archived);
+    }
+
+    public function stockLevels()
+    {
+        return $this->hasMany(CommerceStockLevel::class, 'commerce_article_id');
+    }
+
+    public function salesUnit()
+    {
+        return $this->belongsTo(CommerceUnit::class, 'commerce_sales_unit_id');
+    }
+
+    public function storageUnit()
+    {
+        return $this->belongsTo(CommerceUnit::class, 'commerce_storage_unit_id');
+    }
+
+    public function availabilities()
+    {
+        return $this->hasMany(CommerceArticleAvailability::class, 'commerce_article_id');
     }
 }
 

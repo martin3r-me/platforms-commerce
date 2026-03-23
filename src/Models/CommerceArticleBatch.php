@@ -15,8 +15,11 @@ class CommerceArticleBatch extends Model
     protected $fillable = [
         'commerce_article_id',
         'commerce_supplier_id',
+        'commerce_warehouse_id',
+        'status',
         'batch_number',
         'quantity',
+        'remaining_quantity',
         'storage_location',
         'manufacture_date',
         'expiry_date',
@@ -35,6 +38,11 @@ class CommerceArticleBatch extends Model
     public function supplier()
     {
         return $this->belongsTo(CommerceSupplier::class, 'commerce_supplier_id');
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(CommerceWarehouse::class, 'commerce_warehouse_id');
     }
 }
 

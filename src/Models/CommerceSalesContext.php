@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
+use Platform\Commerce\Enums\ChannelType;
 
 class CommerceSalesContext extends Model
 {
@@ -18,13 +19,21 @@ class CommerceSalesContext extends Model
         'description',
         'valid_from',
         'valid_until',
+        'channel_type',
+        'priority',
         'user_id',
-        'team_id'
+        'team_id',
+        'is_default',
+        'settings',
     ];
 
     protected $casts = [
+        'channel_type' => ChannelType::class,
+        'priority' => 'integer',
         'valid_from' => 'datetime',
         'valid_until' => 'datetime',
+        'is_default' => 'boolean',
+        'settings' => 'array',
     ];
 
     protected static function booted(): void
@@ -41,6 +50,16 @@ class CommerceSalesContext extends Model
     public function articlePrices()
     {
         return $this->hasMany(CommerceArticlePrice::class, 'commerce_sales_context_id');
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(CommerceSale::class, 'commerce_sales_context_id');
+    }
+
+    public function articleAvailabilities()
+    {
+        return $this->hasMany(CommerceArticleAvailability::class, 'commerce_sales_context_id');
     }
 }
 

@@ -1,0 +1,119 @@
+<?php
+
+namespace Platform\Commerce\Tools;
+
+use Platform\Core\Contracts\ToolContract;
+use Platform\Core\Contracts\ToolContext;
+use Platform\Core\Contracts\ToolMetadataContract;
+use Platform\Core\Contracts\ToolResult;
+use Platform\Core\Models\Team;
+use Platform\Core\Tools\Concerns\HasStandardGetOperations;
+use Platform\Commerce\Models\CommerceCustomerGroup;
+
+/**
+ * Listet Kundengruppen für ein Team.
+ */
+class ListCustomerGroupsTool implements ToolContract, ToolMetadataContract
+{
+    use HasStandardGetOperations;
+
+    public function getName(): string
+    {
+        return 'commerce.customer_groups.GET';
+    }
+
+    public function getDescription(): string
+    {
+        return 'GET /commerce/customer-groups - Listet Kundengruppen (id, name, description, color, is_active). Unterstützt filters/search/sort/limit/offset.';
+    }
+
+    public function getSchema(): array
+    {
+        return $this->mergeSchemas(
+            $this->getStandardGetSchema(),
+            [
+                'properties' => [
+                    'team_id' => [
+                        'type' => 'integer',
+                        'description' => 'Optional: Team-ID. Default: Team aus Kontext.',
+                    ],
+                    'is_active' => [
+                        'type' => 'boolean',
+                        'description' => 'Optional: Nur aktive/inaktive Kundengruppen anzeigen.',
+                    ],
+                ],
+            ]
+        );
+    }
+
+    public function execute(array $arguments, ToolContext $context): ToolResult
+    {
+        try {
+            $teamId = $arguments['team_id'] ?? $context->team?->id;
+            if ($teamId === 0 || $teamId === '0') {
+                $teamId = null;
+            }
+            if (!$teamId) {
+                return ToolResult::error('MISSING_TEAM', 'Kein Team angegeben und kein Team im Kontext gefunden.');
+            }
+
+            $team = Team::find((int)$teamId);
+            if (!$team) {
+                return ToolResult::error('TEAM_NOT_FOUND', 'Team nicht gefunden.');
+            }
+
+            if (!$context->user) {
+                return ToolResult::error('AUTH_ERROR', 'Kein User im Kontext gefunden.');
+            }
+            $userHasAccess = $context->user->teams()->where('teams.id', $team->id)->exists();
+            if (!$userHasAccess) {
+                return ToolResult::error('ACCESS_DENIED', 'Du hast keinen Zugriff auf dieses Team.');
+            }
+
+            $q = CommerceCustomerGroup::query()
+                ->where('team_id', $team->id);
+
+            if (isset($arguments['is_active'])) {
+                $q->where('is_active', (bool)$arguments['is_active']);
+            }
+
+            $this->applyStandardFilters($q, $arguments, ['team_id', 'is_active', 'created_at']);
+            $this->applyStandardSearch($q, $arguments, ['name', 'description']);
+            $this->applyStandardSort($q, $arguments, ['name', 'id', 'created_at'], 'id', 'asc');
+
+            $result = $this->applyStandardPaginationResult($q, $arguments);
+            $items = $result['data']->map(fn ($item) => [
+                'id' => $item->id,
+                'name' => $item->name,
+                'description' => $item->description,
+                'color' => $item->color,
+                'is_active' => $item->is_active,
+                'user_id' => $item->user_id,
+                'team_id' => $item->team_id,
+                'created_at' => $item->created_at?->toIso8601String(),
+                'updated_at' => $item->updated_at?->toIso8601String(),
+            ])->values()->toArray();
+
+            return ToolResult::success([
+                'data' => $items,
+                'pagination' => $result['pagination'] ?? null,
+                'team_id' => $team->id,
+            ]);
+        } catch (\Throwable $e) {
+            return ToolResult::error('EXECUTION_ERROR', 'Fehler beim Laden der Kundengruppen: ' . $e->getMessage());
+        }
+    }
+
+    public function getMetadata(): array
+    {
+        return [
+            'category' => 'read',
+            'tags' => ['commerce', 'customer_groups', 'lookup'],
+            'read_only' => true,
+            'requires_auth' => true,
+            'requires_team' => true,
+            'risk_level' => 'safe',
+            'idempotent' => true,
+        ];
+    }
+}

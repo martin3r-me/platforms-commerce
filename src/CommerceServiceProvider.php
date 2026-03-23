@@ -284,40 +284,215 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\UpdateArticleTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteArticleTool());
 
-            // Products Tools
+            // Article Categories
+            $registry->register(new \Platform\Commerce\Tools\ListArticleCategoriesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticleCategoryTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticleCategoryTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticleCategoryTool());
+
+            // Article Prices
+            $registry->register(new \Platform\Commerce\Tools\ListArticlePricesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticlePriceTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticlePriceTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticlePriceTool());
+
+            // Article Net Prices
+            $registry->register(new \Platform\Commerce\Tools\ListArticleNetPricesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticleNetPriceTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticleNetPriceTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticleNetPriceTool());
+
+            // Manufacturers
+            $registry->register(new \Platform\Commerce\Tools\ListManufacturersTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateManufacturerTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateManufacturerTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteManufacturerTool());
+
+            // Suppliers
+            $registry->register(new \Platform\Commerce\Tools\ListSuppliersTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateSupplierTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateSupplierTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteSupplierTool());
+
+            // Tax Categories
+            $registry->register(new \Platform\Commerce\Tools\ListTaxCategoriesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateTaxCategoryTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateTaxCategoryTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteTaxCategoryTool());
+
+            // Tax Rules
+            $registry->register(new \Platform\Commerce\Tools\ListTaxRulesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateTaxRuleTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateTaxRuleTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteTaxRuleTool());
+
+            // Sales Contexts
+            $registry->register(new \Platform\Commerce\Tools\ListSalesContextsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateSalesContextTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateSalesContextTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteSalesContextTool());
+
+            // Sales
+            $registry->register(new \Platform\Commerce\Tools\ListSalesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateSaleTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateSaleTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteSaleTool());
+
+            // Sale Items
+            $registry->register(new \Platform\Commerce\Tools\ListSaleItemsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateSaleItemTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateSaleItemTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteSaleItemTool());
+
+            // Product Rules
+            $registry->register(new \Platform\Commerce\Tools\ListProductRulesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductRuleTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductRuleTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductRuleTool());
+
+            // Product Promotions
+            $registry->register(new \Platform\Commerce\Tools\ListProductPromotionsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductPromotionTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductPromotionTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductPromotionTool());
+
+            // Product Boards
+            $registry->register(new \Platform\Commerce\Tools\ListProductBoardsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductBoardTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductBoardTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductBoardTool());
+
+            // Product Board Slots
+            $registry->register(new \Platform\Commerce\Tools\ListProductBoardSlotsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateProductBoardSlotTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateProductBoardSlotTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteProductBoardSlotTool());
+
+            // Attribute Sets
+            $registry->register(new \Platform\Commerce\Tools\ListAttributeSetsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateAttributeSetTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateAttributeSetTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteAttributeSetTool());
+
+            // Attribute Set Items
+            $registry->register(new \Platform\Commerce\Tools\ListAttributeSetItemsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateAttributeSetItemTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateAttributeSetItemTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteAttributeSetItemTool());
+
+            // Products
             $registry->register(new \Platform\Commerce\Tools\ListProductsTool());
             $registry->register(new \Platform\Commerce\Tools\CreateProductTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateProductTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteProductTool());
 
-            // Product-Slot Attachments (verknüpft Slots mit Produkten)
+            // Product-Slot Attachments
             $registry->register(new \Platform\Commerce\Tools\ListProductSlotAttachmentsTool());
             $registry->register(new \Platform\Commerce\Tools\AttachProductSlotTool());
             $registry->register(new \Platform\Commerce\Tools\DetachProductSlotTool());
 
-            // Product Slots (Dimensions-Sets wie "Größe & Farbe")
+            // Product Slots
             $registry->register(new \Platform\Commerce\Tools\ListProductSlotsTool());
             $registry->register(new \Platform\Commerce\Tools\CreateProductSlotTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotTool());
 
-            // Product Slot Dimensions (z.B. "Größe", "Farbe")
+            // Product Slot Dimensions
             $registry->register(new \Platform\Commerce\Tools\ListProductSlotDimensionsTool());
             $registry->register(new \Platform\Commerce\Tools\CreateProductSlotDimensionTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotDimensionTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotDimensionTool());
 
-            // Product Slot Dimension Values (z.B. "S", "M", "L", "Rot", "Blau")
+            // Product Slot Dimension Values
             $registry->register(new \Platform\Commerce\Tools\ListProductSlotDimensionValuesTool());
             $registry->register(new \Platform\Commerce\Tools\CreateProductSlotDimensionValueTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotDimensionValueTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotDimensionValueTool());
 
-            // Product Slot Variants (verknüpft Artikel mit Dimensions-Kombinationen)
+            // Product Slot Variants
             $registry->register(new \Platform\Commerce\Tools\ListProductSlotVariantsTool());
             $registry->register(new \Platform\Commerce\Tools\CreateProductSlotVariantTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateProductSlotVariantTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteProductSlotVariantTool());
+
+            // --- Phase 2: Price System ---
+
+            // Price Lists
+            $registry->register(new \Platform\Commerce\Tools\ListPriceListsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreatePriceListTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdatePriceListTool());
+            $registry->register(new \Platform\Commerce\Tools\DeletePriceListTool());
+
+            // Price Tiers
+            $registry->register(new \Platform\Commerce\Tools\ListPriceTiersTool());
+            $registry->register(new \Platform\Commerce\Tools\CreatePriceTierTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdatePriceTierTool());
+            $registry->register(new \Platform\Commerce\Tools\DeletePriceTierTool());
+
+            // Customer Groups
+            $registry->register(new \Platform\Commerce\Tools\ListCustomerGroupsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateCustomerGroupTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateCustomerGroupTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteCustomerGroupTool());
+
+            // Customer Group Prices
+            $registry->register(new \Platform\Commerce\Tools\ListCustomerGroupPricesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateCustomerGroupPriceTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateCustomerGroupPriceTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteCustomerGroupPriceTool());
+
+            // Price Resolver
+            $registry->register(new \Platform\Commerce\Tools\ResolvePriceTool());
+
+            // --- Phase 3: Inventory ---
+
+            // Warehouses
+            $registry->register(new \Platform\Commerce\Tools\ListWarehousesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateWarehouseTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateWarehouseTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteWarehouseTool());
+
+            // Stock Levels (read-only)
+            $registry->register(new \Platform\Commerce\Tools\ListStockLevelsTool());
+
+            // Stock Movements
+            $registry->register(new \Platform\Commerce\Tools\ListStockMovementsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateStockMovementTool());
+
+            // Stock Reservations
+            $registry->register(new \Platform\Commerce\Tools\ListStockReservationsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateStockReservationTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteStockReservationTool());
+
+            // Stock Transfer
+            $registry->register(new \Platform\Commerce\Tools\TransferStockTool());
+
+            // --- Phase 4: Units ---
+
+            // Units
+            $registry->register(new \Platform\Commerce\Tools\ListUnitsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateUnitTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateUnitTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteUnitTool());
+
+            // Unit Conversions
+            $registry->register(new \Platform\Commerce\Tools\ListUnitConversionsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateUnitConversionTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateUnitConversionTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteUnitConversionTool());
+
+            // Unit Converter
+            $registry->register(new \Platform\Commerce\Tools\ConvertUnitTool());
+
+            // --- Phase 5: Rule Engine ---
+            $registry->register(new \Platform\Commerce\Tools\EvaluateRulesTool());
+
+            // --- Phase 6: Article Availability ---
+            $registry->register(new \Platform\Commerce\Tools\ListArticleAvailabilitiesTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticleAvailabilityTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticleAvailabilityTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticleAvailabilityTool());
+            $registry->register(new \Platform\Commerce\Tools\CheckAvailabilityTool());
         } catch (\Throwable $e) {
             \Log::warning('Commerce: Tool-Registrierung fehlgeschlagen', ['error' => $e->getMessage()]);
         }
