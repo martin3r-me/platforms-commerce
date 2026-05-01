@@ -32,6 +32,11 @@
                 @svg('heroicon-o-cube', 'w-4 h-4 text-gray-400')
                 Produkte
             </a>
+            <a href="{{ route('commerce.products.boards.index') }}" wire:navigate
+               class="flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+                @svg('heroicon-o-view-columns', 'w-4 h-4 text-gray-400')
+                Boards
+            </a>
             <a href="{{ route('commerce.catalogs.index') }}" wire:navigate
                class="flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium text-gray-700 hover:bg-gray-100 transition-colors">
                 @svg('heroicon-o-book-open', 'w-4 h-4 text-gray-400')
@@ -61,6 +66,9 @@
             </a>
             <a href="{{ route('commerce.products.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
                 @svg('heroicon-o-cube', 'w-5 h-5')
+            </a>
+            <a href="{{ route('commerce.products.boards.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                @svg('heroicon-o-view-columns', 'w-5 h-5')
             </a>
             <a href="{{ route('commerce.catalogs.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
                 @svg('heroicon-o-book-open', 'w-5 h-5')

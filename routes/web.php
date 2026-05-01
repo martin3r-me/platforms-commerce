@@ -25,6 +25,8 @@ use Platform\Commerce\Livewire\Articles\Index as ArticlesIndex;
 use Platform\Commerce\Livewire\Articles\Article;
 use Platform\Commerce\Livewire\Products\Index as ProductsIndex;
 use Platform\Commerce\Livewire\Products\Product;
+use Platform\Commerce\Livewire\Products\Boards\Index as BoardsIndex;
+use Platform\Commerce\Livewire\Products\Boards\Board;
 use Platform\Commerce\Livewire\Attributes\Index as AttributesIndex;
 use Platform\Commerce\Livewire\Attributes\AttributeSet;
 use Platform\Commerce\Livewire\Catalogs\Index as CatalogsIndex;
@@ -58,9 +60,17 @@ Route::get('/articles/{commerceArticle}', Article::class)
  * Produkt Routes
  *
  * Verwaltung von Produkten (CommerceProduct)
- * Einfache Liste ohne Board-Struktur
  */
 Route::get('/products', ProductsIndex::class)->name('commerce.products.index');
+
+/**
+ * Board Routes (vor Produkt-Detail, damit /products/boards nicht als {commerceProduct} gematcht wird)
+ *
+ * Kanban-Ansicht für Produkte, organisiert in Boards mit Slots
+ */
+Route::get('/products/boards', BoardsIndex::class)->name('commerce.products.boards.index');
+Route::get('/products/boards/{commerceProductBoard}', Board::class)
+    ->name('commerce.products.boards.show');
 
 /**
  * Produkt Detail Route
