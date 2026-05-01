@@ -13,6 +13,14 @@
         </x-ui-page-navbar>
     </x-slot>
 
+    <x-slot name="actionbar">
+        <x-ui-page-actionbar :breadcrumbs="[
+            ['label' => 'Commerce', 'href' => route('commerce.index'), 'icon' => 'shopping-bag'],
+            ['label' => 'Boards', 'href' => route('commerce.products.boards.index')],
+            ['label' => $board->name],
+        ]" />
+    </x-slot>
+
     <x-slot name="sidebar">
         <x-ui-page-sidebar title="Übersicht" width="w-80" :defaultOpen="true" storeKey="sidebarOpen" side="left">
             <div class="p-6 space-y-6">
@@ -62,22 +70,37 @@
     </x-slot>
 
     <x-ui-page-container>
-        <div class="overflow-x-auto">
-            <div class="flex gap-4 min-w-max pb-4"
-                 wire:sortable="updateProductBoardSlotOrder"
-                 wire:sortable-group="updateProductOrder"
-                 wire:sortable.options="{ animation: 300 }">
-                @foreach($board->productBoardSlots as $slot)
-                    <div wire:sortable.item="{{ $slot->id }}"
-                         wire:key="product-board-slot-wrapper-{{ $board->id }}-slot-{{$slot->id}}"
-                         class="flex-shrink-0 w-80">
-                        <livewire:commerce.products.boards.slot
-                            :productBoardSlot="$slot"
-                            :key="'product-board-slot-id' . $slot->id"
-                            @deleted="$refresh"/>
-                    </div>
-                @endforeach
+        @if($board->productBoardSlots->count() > 0)
+            <div class="overflow-x-auto">
+                <div class="flex gap-4 min-w-max pb-4"
+                     wire:sortable="updateProductBoardSlotOrder"
+                     wire:sortable-group="updateProductOrder"
+                     wire:sortable.options="{ animation: 300 }">
+                    @foreach($board->productBoardSlots as $slot)
+                        <div wire:sortable.item="{{ $slot->id }}"
+                             wire:key="product-board-slot-wrapper-{{ $board->id }}-slot-{{$slot->id}}"
+                             class="flex-shrink-0 w-80">
+                            <livewire:commerce.products.boards.slot
+                                :productBoardSlot="$slot"
+                                :key="'product-board-slot-id' . $slot->id"
+                                @deleted="$refresh"/>
+                        </div>
+                    @endforeach
+                </div>
             </div>
-        </div>
+        @else
+            <div class="flex flex-col items-center justify-center py-20">
+                <div class="inline-flex items-center justify-center w-14 h-14 rounded-full bg-blue-50 mb-4">
+                    @svg('heroicon-o-view-columns', 'w-7 h-7 text-[#166EE1]')
+                </div>
+                <h3 class="text-[13px] font-medium text-gray-900 mb-1">Noch keine Slots vorhanden</h3>
+                <p class="text-[13px] text-gray-500 mb-4">Erstelle deinen ersten Slot, um Produkte auf diesem Board zu organisieren.</p>
+                <button wire:click="createProductBoardSlot"
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
+                    <x-heroicon-s-plus class="w-4 h-4"/>
+                    Ersten Slot erstellen
+                </button>
+            </div>
+        @endif
     </x-ui-page-container>
 </x-ui-page>

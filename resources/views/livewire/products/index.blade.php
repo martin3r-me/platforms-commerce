@@ -17,6 +17,12 @@
 
     <x-ui-page-container>
         <div class="space-y-6">
+            {{-- Info-Box --}}
+            <div class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3">
+                @svg('heroicon-o-information-circle', 'w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0')
+                <p class="text-[13px] text-blue-800">Produkte sind Zusammenstellungen von Artikeln. Organisiere sie auf Boards und versehe sie mit konfigurierbaren Slots.</p>
+            </div>
+
             {{-- Create Product Form --}}
             <section class="bg-white rounded-lg border border-gray-200">
                 <div class="px-4 py-3 border-b border-gray-200">
@@ -56,8 +62,10 @@
                         <thead>
                             <tr class="border-b border-gray-200 bg-gray-50">
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Name</th>
-                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Farbe</th>
-                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Preis</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Artikel</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Board</th>
+                                <th class="text-center text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Slots</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Preisabw.</th>
                                 <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Erstellt</th>
                             </tr>
                         </thead>
@@ -67,24 +75,43 @@
                                     wire:key="product-{{ $product->id }}"
                                     x-on:click="window.Livewire.navigate('{{ route('commerce.products.show', $product) }}')">
                                     <td class="py-2.5 px-4">
-                                        <div class="text-[13px] font-medium text-gray-900">{{ $product->name }}</div>
-                                        @if($product->description)
-                                            <div class="text-[11px] text-gray-400 truncate max-w-xs">{{ Str::limit($product->description, 60) }}</div>
+                                        <div class="flex items-center gap-2">
+                                            @if($product->color)
+                                                <span class="w-3 h-3 rounded-full border border-gray-200 flex-shrink-0" style="background-color: {{ $product->color }}"></span>
+                                            @endif
+                                            <div>
+                                                <div class="text-[13px] font-medium text-gray-900">{{ $product->name }}</div>
+                                                @if($product->description)
+                                                    <div class="text-[11px] text-gray-400 truncate max-w-xs">{{ Str::limit($product->description, 60) }}</div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="py-2.5 px-4">
+                                        @if($product->article)
+                                            <a href="{{ route('commerce.articles.show', $product->article) }}"
+                                               wire:navigate
+                                               x-on:click.stop
+                                               class="text-[13px] text-[#166EE1] hover:underline">{{ $product->article->name }}</a>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">&mdash;</span>
                                         @endif
                                     </td>
                                     <td class="py-2.5 px-4">
-                                        @if($product->color)
-                                            <span class="inline-flex items-center gap-1.5 text-[13px] text-gray-700">
-                                                <span class="w-3 h-3 rounded-full border border-gray-200" style="background-color: {{ $product->color }}"></span>
-                                                {{ $product->color }}
+                                        @if($product->slot && $product->slot->board)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-700">
+                                                {{ $product->slot->board->name }}
                                             </span>
                                         @else
                                             <span class="text-[13px] text-gray-300">&mdash;</span>
                                         @endif
                                     </td>
+                                    <td class="py-2.5 px-4 text-center text-[13px] text-gray-700">
+                                        {{ $product->productSlots->count() }}
+                                    </td>
                                     <td class="py-2.5 px-4 text-right text-[13px] text-gray-700">
-                                        @if($product->price)
-                                            {{ number_format($product->price, 2, ',', '.') }} &euro;
+                                        @if($product->price_deviation_value)
+                                            {{ number_format($product->price_deviation_value, 2, ',', '.') }}{{ $product->price_deviation_type === 'relative' ? '%' : '€' }}
                                         @else
                                             <span class="text-gray-300">&mdash;</span>
                                         @endif
@@ -95,8 +122,12 @@
                         </tbody>
                     </table>
                 @else
-                    <div class="p-8 text-center">
-                        <p class="text-[13px] text-gray-400">Noch keine Produkte vorhanden.</p>
+                    <div class="p-12 text-center">
+                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-4">
+                            @svg('heroicon-o-cube', 'w-6 h-6 text-[#166EE1]')
+                        </div>
+                        <h3 class="text-[13px] font-medium text-gray-900 mb-1">Noch keine Produkte vorhanden</h3>
+                        <p class="text-[13px] text-gray-500">Erstelle dein erstes Produkt, um loszulegen.</p>
                     </div>
                 @endif
             </section>

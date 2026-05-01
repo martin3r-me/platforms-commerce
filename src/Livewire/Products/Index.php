@@ -56,6 +56,7 @@ class Index extends Component
          * Lade Produkte für das Team
          */
         $products = CommerceProduct::where('team_id', $team->id)
+            ->with(['article', 'slot.board', 'productSlots'])
             ->orderBy('name')
             ->get();
 

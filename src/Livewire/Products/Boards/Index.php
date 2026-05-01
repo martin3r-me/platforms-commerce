@@ -122,8 +122,17 @@ class Index extends Component
          * Lade Product Boards für das Team
          */
         $productBoards = CommerceProductBoard::where('team_id', $team->id)
+            ->withCount('productBoardSlots')
             ->orderBy('name')
             ->get();
+
+        // Count products per board via slots
+        $productBoards->each(function ($board) {
+            $board->products_count = \Platform\Commerce\Models\CommerceProduct::whereIn(
+                'commerce_product_board_slot_id',
+                $board->productBoardSlots()->pluck('id')
+            )->count();
+        });
 
         return view('commerce::livewire.products.boards.index', [
             'productBoards' => $productBoards,

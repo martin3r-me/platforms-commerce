@@ -180,6 +180,12 @@
                         </button>
                     </div>
                     <div class="p-4">
+                        {{-- Info-Box --}}
+                        <div class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 mb-6">
+                            @svg('heroicon-o-information-circle', 'w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0')
+                            <p class="text-[13px] text-blue-800">Slots definieren konfigurierbare Optionen (z.B. Gr&ouml;&szlig;enwahl, Beilagen). Jeder Slot kann Dimensionen haben, die eine Varianten-Matrix erzeugen.</p>
+                        </div>
+
                         <div class="space-y-8">
                             @foreach ($product->productSlots as $slot)
                                 <livewire:commerce.products.slot
