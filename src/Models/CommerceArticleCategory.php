@@ -57,7 +57,7 @@ class CommerceArticleCategory extends Model
      */
     public function descendants()
     {
-        return $this->children()->with('descendants');
+        return $this->children()->withCount('articles')->with('descendants');
     }
 
     /**

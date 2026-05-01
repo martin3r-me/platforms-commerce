@@ -12,8 +12,8 @@
                     <span class="w-3 h-3 rounded-full flex-shrink-0 bg-[var(--ui-muted-20)]"></span>
                 @endif
                 <span class="text-sm font-medium text-[var(--ui-secondary)]">{{ $category->name }}</span>
-                @if($category->articles_count ?? $category->articles?->count())
-                    <span class="text-xs text-[var(--ui-muted)]">({{ $category->articles_count ?? $category->articles->count() }})</span>
+                @if(($category->articles_count ?? 0) > 0)
+                    <span class="text-xs text-[var(--ui-muted)]">({{ $category->articles_count }})</span>
                 @endif
             </div>
             <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">

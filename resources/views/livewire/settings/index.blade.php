@@ -174,7 +174,7 @@
                             label="Übergeordnete Kategorie"
                             :options="$allArticleCategories"
                             optionValue="id"
-                            optionLabel="name"
+                            optionLabel="display_name"
                             :nullable="true"
                             nullLabel="-- Hauptkategorie (oberste Ebene) --"
                             wire:model="cat_parent_id"
@@ -281,8 +281,8 @@
                                             @endif
                                             <div>
                                                 <span class="text-sm font-medium text-[var(--ui-secondary)]">{{ $type->name }}</span>
-                                                @if($type->articles->count() > 0)
-                                                    <span class="text-xs text-[var(--ui-muted)] ml-1">({{ $type->articles->count() }} Artikel)</span>
+                                                @if($type->articles_count > 0)
+                                                    <span class="text-xs text-[var(--ui-muted)] ml-1">({{ $type->articles_count }} Artikel)</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -645,7 +645,7 @@
                     label="Übergeordnete Kategorie"
                     :options="$allArticleCategories"
                     optionValue="id"
-                    optionLabel="name"
+                    optionLabel="display_name"
                     :nullable="true"
                     nullLabel="-- Hauptkategorie (oberste Ebene) --"
                     wire:model="editCatParentId"

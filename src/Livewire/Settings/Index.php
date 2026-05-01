@@ -86,6 +86,7 @@ class Index extends Component
     protected function getTeamArticleTypes()
     {
         return CommerceArticleType::where('team_id', Auth::user()->currentTeam->id)
+            ->withCount('articles')
             ->orderBy('name')
             ->get();
     }
@@ -95,6 +96,7 @@ class Index extends Component
         return CommerceArticleCategory::where('team_id', Auth::user()->currentTeam->id)
             ->whereNull('parent_id')
             ->with('descendants')
+            ->withCount('articles')
             ->orderBy('sort_order')
             ->orderBy('name')
             ->get();
@@ -102,9 +104,16 @@ class Index extends Component
 
     protected function getAllArticleCategories()
     {
-        return CommerceArticleCategory::where('team_id', Auth::user()->currentTeam->id)
+        $categories = CommerceArticleCategory::where('team_id', Auth::user()->currentTeam->id)
+            ->with('parent')
             ->orderBy('name')
             ->get();
+
+        // Append path for display in dropdowns
+        return $categories->map(function ($cat) {
+            $cat->display_name = $cat->path;
+            return $cat;
+        })->sortBy('display_name')->values();
     }
 
     // ── Tax Category CRUD ──
