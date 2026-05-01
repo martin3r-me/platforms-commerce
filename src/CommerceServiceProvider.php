@@ -494,6 +494,22 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\UpdateArticleAvailabilityTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteArticleAvailabilityTool());
             $registry->register(new \Platform\Commerce\Tools\CheckAvailabilityTool());
+
+            // --- Phase 7: Catalogs ---
+            $registry->register(new \Platform\Commerce\Tools\ListCatalogsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateCatalogTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateCatalogTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteCatalogTool());
+
+            // Catalog Sections
+            $registry->register(new \Platform\Commerce\Tools\ListCatalogSectionsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateCatalogSectionTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateCatalogSectionTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteCatalogSectionTool());
+
+            // Catalog Section Board Attachments
+            $registry->register(new \Platform\Commerce\Tools\AttachCatalogSectionBoardTool());
+            $registry->register(new \Platform\Commerce\Tools\DetachCatalogSectionBoardTool());
         } catch (\Throwable $e) {
             \Log::warning('Commerce: Tool-Registrierung fehlgeschlagen', ['error' => $e->getMessage()]);
         }
