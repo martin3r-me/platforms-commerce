@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CommerceProduct extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_products';
 

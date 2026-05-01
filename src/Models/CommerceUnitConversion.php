@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CommerceUnitConversion extends Model
 {
-    use HasFactory;
+    use HasFactory, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_unit_conversions';
 

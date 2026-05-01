@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CommerceArticleBatch extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_article_batches';
 

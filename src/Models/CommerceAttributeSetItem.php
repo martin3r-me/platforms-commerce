@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CommerceAttributeSetItem extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_attribute_set_items';
 

@@ -10,7 +10,7 @@ use Platform\Commerce\Enums\ChannelType;
 
 class CommerceSalesContext extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_sales_contexts';
 

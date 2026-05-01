@@ -9,7 +9,7 @@ use Platform\Commerce\Enums\StockMovementType;
 
 class CommerceStockMovement extends Model
 {
-    use HasFactory;
+    use HasFactory, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_stock_movements';
 

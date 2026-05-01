@@ -10,7 +10,7 @@ use Platform\Commerce\Enums\PriceType;
 
 class CommercePriceList extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_price_lists';
 

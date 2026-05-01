@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CommerceSlotDependency extends Model
 {
-    use HasFactory;
+    use HasFactory, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_slot_dependencies';
 

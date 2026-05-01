@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class CommerceTaxCategory extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_tax_categories';
 

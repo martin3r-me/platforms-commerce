@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CommerceProductSlotVariant extends Model
 {
-    use HasFactory;
+    use HasFactory, \Platform\ActivityLog\Traits\LogsActivity;
 
     protected $table = 'commerce_product_slot_variants';
 
