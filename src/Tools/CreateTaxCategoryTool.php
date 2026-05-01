@@ -95,7 +95,7 @@ class CreateTaxCategoryTool implements ToolContract, ToolMetadataContract
                 'default_rate' => $defaultRate,
                 'valid_from' => (array_key_exists('valid_from', $arguments) && $arguments['valid_from'] !== '')
                     ? (string)$arguments['valid_from']
-                    : null,
+                    : now()->toDateString(),
                 'valid_until' => (array_key_exists('valid_until', $arguments) && $arguments['valid_until'] !== '')
                     ? (string)$arguments['valid_until']
                     : null,
