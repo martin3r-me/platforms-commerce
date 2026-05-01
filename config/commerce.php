@@ -46,6 +46,22 @@ return [
         'order' => 40,
     ],
 
+    'sidebar' => [
+        [
+            'group' => 'Navigation',
+            'items' => [
+                ['label' => 'Dashboard', 'route' => 'commerce.index', 'icon' => 'heroicon-o-home'],
+                ['label' => 'Artikel', 'route' => 'commerce.articles.index', 'icon' => 'heroicon-o-rectangle-stack'],
+                ['label' => 'Produkte', 'route' => 'commerce.products.index', 'icon' => 'heroicon-o-cube'],
+                ['label' => 'Boards', 'route' => 'commerce.products.boards.index', 'icon' => 'heroicon-o-view-columns'],
+                ['label' => 'Lieferanten', 'route' => 'commerce.suppliers.index', 'icon' => 'heroicon-o-truck'],
+                ['label' => 'Kataloge', 'route' => 'commerce.catalogs.index', 'icon' => 'heroicon-o-book-open'],
+                ['label' => 'Attribute', 'route' => 'commerce.attributes.index', 'icon' => 'heroicon-o-tag'],
+                ['label' => 'Einstellungen', 'route' => 'commerce.settings.index', 'icon' => 'heroicon-o-cog-6-tooth'],
+            ],
+        ],
+    ],
+
     /**
      * Billables-Konfiguration (optional)
      * 

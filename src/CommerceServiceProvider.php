@@ -144,12 +144,21 @@ class CommerceServiceProvider extends ServiceProvider
             
             /**
              * Web-Routes (authentifiziert)
-             * 
+             *
              * Für authentifizierte Commerce-Funktionen
              */
             ModuleRouter::group('commerce', function () {
                 $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
             });
+
+            /**
+             * API-Routes (Token-basiert, keine Session/Auth)
+             *
+             * Für Webhook-Endpoints (Supplier Ingest)
+             */
+            ModuleRouter::apiGroup('commerce', function () {
+                $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+            }, requireAuth: false);
         }
 
         /**
@@ -520,6 +529,18 @@ class CommerceServiceProvider extends ServiceProvider
             // Catalog Section Board Attachments
             $registry->register(new \Platform\Commerce\Tools\AttachCatalogSectionBoardTool());
             $registry->register(new \Platform\Commerce\Tools\DetachCatalogSectionBoardTool());
+
+            // --- Supplier Stream System ---
+
+            // Supplier Field Mappings
+            $registry->register(new \Platform\Commerce\Tools\ListSupplierFieldMappingsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateSupplierFieldMappingTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateSupplierFieldMappingTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteSupplierFieldMappingTool());
+
+            // Supplier Imports
+            $registry->register(new \Platform\Commerce\Tools\ListSupplierImportsTool());
+            $registry->register(new \Platform\Commerce\Tools\TriggerSupplierImportTool());
         } catch (\Throwable $e) {
             \Log::warning('Commerce: Tool-Registrierung fehlgeschlagen', ['error' => $e->getMessage()]);
         }

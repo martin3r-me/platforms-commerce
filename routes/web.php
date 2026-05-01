@@ -29,6 +29,9 @@ use Platform\Commerce\Livewire\Products\Boards\Index as BoardsIndex;
 use Platform\Commerce\Livewire\Products\Boards\Board;
 use Platform\Commerce\Livewire\Attributes\Index as AttributesIndex;
 use Platform\Commerce\Livewire\Attributes\AttributeSet;
+use Platform\Commerce\Livewire\Suppliers\Index as SuppliersIndex;
+use Platform\Commerce\Livewire\Suppliers\Onboarding as SupplierOnboarding;
+use Platform\Commerce\Livewire\Suppliers\Detail as SupplierDetail;
 use Platform\Commerce\Livewire\Catalogs\Index as CatalogsIndex;
 use Platform\Commerce\Livewire\Catalogs\Catalog;
 use Platform\Commerce\Livewire\Settings\Index as SettingsIndex;
@@ -94,6 +97,15 @@ Route::get('/attributes', AttributesIndex::class)->name('commerce.attributes.ind
  */
 Route::get('/attributes/{commerceAttributeSet}', AttributeSet::class)
     ->name('commerce.attributes.show');
+
+/**
+ * Lieferanten Routes
+ */
+Route::get('/suppliers', SuppliersIndex::class)->name('commerce.suppliers.index');
+Route::get('/suppliers/{commerceSupplier}/onboarding', SupplierOnboarding::class)
+    ->name('commerce.suppliers.onboarding');
+Route::get('/suppliers/{commerceSupplier}', SupplierDetail::class)
+    ->name('commerce.suppliers.show');
 
 /**
  * Katalog Routes
