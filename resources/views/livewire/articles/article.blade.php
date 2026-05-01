@@ -1,5 +1,5 @@
 @push('scripts')
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
 @endpush
 
 <x-ui-page x-data="{ 
@@ -377,7 +377,7 @@ x-init="$nextTick(() => initIntersectionObserver())">
                                 wire:model.live="article.commerce_tax_category_id"
                                 :errorKey="'article.commerce_tax_category_id'"
                                 @if($article->articleNetPrices->count() > 0)
-                                    @change="
+                                    x-on:change="
                                         $event.preventDefault();
                                         const newValue = $event.target.value;
                                         confirmTitle = 'Steuerkategorie ändern';
@@ -401,7 +401,7 @@ x-init="$nextTick(() => initIntersectionObserver())">
                                                class="w-full bg-slate-50 border-0 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500">
                                         <button 
                                             @if($article->articleNetPrices->count() > 0)
-                                                @click.prevent="
+                                                x-on:click.prevent="
                                                     confirmTitle = 'Preis speichern';
                                                     confirmMessage = 'Ein neuer Preis überschreibt die Gültigkeit aller vorherigen Preise. Fortfahren?';
                                                     confirmAction = () => $wire.createPrice();
