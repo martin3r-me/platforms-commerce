@@ -153,6 +153,11 @@ class CommerceArticle extends Model
         return $this->belongsTo(CommerceArticleType::class, 'commerce_article_type_id');
     }
 
+    public function products()
+    {
+        return $this->hasMany(CommerceProduct::class, 'commerce_article_id');
+    }
+
     public function creator()
     {
         return $this->belongsTo(\Platform\Core\Models\User::class, 'created_by');

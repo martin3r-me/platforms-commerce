@@ -17,6 +17,7 @@ class CommerceProduct extends Model
     protected $fillable = [
         'user_id',
         'team_id',
+        'commerce_article_id',
         'uuid',
         'name',
         'description',
@@ -55,6 +56,11 @@ class CommerceProduct extends Model
      * - CRM Contacts (Kontakte)
      * hinzugefügt werden.
      */
+
+    public function article()
+    {
+        return $this->belongsTo(CommerceArticle::class, 'commerce_article_id');
+    }
 
     public function slot()
     {
