@@ -59,6 +59,7 @@ class CommerceArticle extends Model
         'is_digital',
         'is_physical',
         'short_description',
+        'procurement_type',
         'long_description',
         'product_highlights',
         'created_by',

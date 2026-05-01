@@ -42,25 +42,27 @@ class CommerceServiceProvider extends ServiceProvider
     {
         /**
          * Config laden
-         * 
+         *
          * mergeConfigFrom lädt die Config aus dem Package-Verzeichnis
          * und merged sie mit der Config aus config/ (falls vorhanden).
-         * 
+         *
          * WICHTIG: Muss in register() sein, nicht in boot()!
          */
         $this->mergeConfigFrom(__DIR__.'/../config/commerce.php', 'commerce');
-        
-        /**
-         * Commands registrieren (optional)
-         * 
-         * Falls das Modul Artisan Commands hat:
-         * 
-         * if ($this->app->runningInConsole()) {
-         *     $this->commands([
-         *         \Platform\Commerce\Console\Commands\YourCommand::class,
-         *     ]);
-         * }
-         */
+
+        // Catalog-Contracts ueberschreiben (Core-Null → Commerce-Implementierung)
+        $this->app->singleton(
+            \Platform\Core\Contracts\CatalogArticleSearchProviderInterface::class,
+            \Platform\Commerce\Services\CoreCatalogArticleSearchProvider::class
+        );
+        $this->app->singleton(
+            \Platform\Core\Contracts\CatalogArticleResolverInterface::class,
+            \Platform\Commerce\Services\CoreCatalogArticleResolver::class
+        );
+        $this->app->singleton(
+            \Platform\Core\Contracts\CatalogArticleProcurementMapProviderInterface::class,
+            \Platform\Commerce\Services\CoreCatalogArticleProcurementMapProvider::class
+        );
     }
 
     /**
