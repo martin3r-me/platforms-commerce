@@ -75,6 +75,93 @@
     </x-slot>
 
     <x-ui-page-container spacing="space-y-8">
+      <div x-data="{
+          selectedTab: 'general',
+          showConfirmModal: false,
+          confirmAction: null,
+          confirmTitle: '',
+          confirmMessage: '',
+          handleConfirm() {
+              if (this.confirmAction) {
+                  this.confirmAction();
+              }
+              this.showConfirmModal = false;
+          },
+          scrollToSection(sectionId) {
+              const section = document.getElementById(sectionId);
+              if (section) {
+                  section.scrollIntoView({ behavior: 'smooth' });
+              }
+              this.selectedTab = sectionId;
+          }
+      }" class="space-y-8">
+
+        <!-- Confirm Modal -->
+        <template x-teleport="body">
+            <div x-show="showConfirmModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto">
+                <div class="flex items-center justify-center min-h-screen px-4">
+                    <div x-show="showConfirmModal" class="fixed inset-0 bg-black/50" x-on:click="showConfirmModal = false"></div>
+                    <div x-show="showConfirmModal" class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-auto">
+                        <div class="p-6">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <x-heroicon-s-exclamation-triangle class="w-5 h-5 text-amber-600"/>
+                                </div>
+                                <h3 class="text-lg font-medium text-slate-900" x-text="confirmTitle"></h3>
+                            </div>
+                            <p class="text-sm text-slate-600 mb-6" x-text="confirmMessage"></p>
+                            <div class="flex justify-end gap-3">
+                                <button x-on:click="showConfirmModal = false"
+                                        class="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                                    Abbrechen
+                                </button>
+                                <button x-on:click="handleConfirm()"
+                                        class="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
+                                    Bestätigen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- Tabs Navigation -->
+        <div class="border-b border-[var(--ui-border)]/60 mb-6">
+            <nav class="flex gap-1 flex-wrap">
+                <button x-on:click="scrollToSection('general')"
+                        :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'general', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'general' }"
+                        class="px-3 py-2 text-sm font-medium transition-all duration-200">
+                    Allgemein
+                </button>
+                <button x-on:click="scrollToSection('prices')"
+                        :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'prices', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'prices' }"
+                        class="px-3 py-2 text-sm font-medium transition-all duration-200">
+                    Preise
+                </button>
+                <button x-on:click="scrollToSection('identification')"
+                        :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'identification', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'identification' }"
+                        class="px-3 py-2 text-sm font-medium transition-all duration-200">
+                    Identifikation
+                </button>
+                <button x-on:click="scrollToSection('attributes')"
+                        :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'attributes', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'attributes' }"
+                        class="px-3 py-2 text-sm font-medium transition-all duration-200">
+                    Attribute
+                </button>
+                <button x-on:click="scrollToSection('stock')"
+                        :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'stock', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'stock' }"
+                        class="px-3 py-2 text-sm font-medium transition-all duration-200">
+                    Lagerbestand
+                </button>
+                <button x-on:click="scrollToSection('shipping')"
+                        :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'shipping', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'shipping' }"
+                        class="px-3 py-2 text-sm font-medium transition-all duration-200">
+                    Versand
+                </button>
+            </nav>
+        </div>
+
         <!-- General Section -->
         <section id="general">
             <x-ui-panel title="Allgemeine Informationen">
@@ -180,7 +267,16 @@
                                                wire:model="netPrice"
                                                step="0.01"
                                                class="w-full bg-slate-50 border-0 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-purple-500">
-                                        <button wire:click="createPrice"
+                                        <button x-on:click="
+                                                    @if($article->articleNetPrices->count() > 0)
+                                                        confirmTitle = 'Preis speichern';
+                                                        confirmMessage = 'Ein neuer Preis überschreibt die Gültigkeit aller vorherigen Preise. Fortfahren?';
+                                                        confirmAction = () => $wire.createPrice();
+                                                        showConfirmModal = true;
+                                                    @else
+                                                        $wire.createPrice();
+                                                    @endif
+                                                "
                                                 class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm hover:bg-purple-700 transition-colors whitespace-nowrap">
                                             Preis speichern
                                         </button>
@@ -345,5 +441,6 @@
                 </div>
             </x-ui-panel>
         </section>
+      </div>
     </x-ui-page-container>
 </x-ui-page>
