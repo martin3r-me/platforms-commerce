@@ -1,5 +1,5 @@
 @push('scripts')
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@@11" defer></script>
 @endpush
 
 <x-ui-page x-data="{ 
@@ -61,7 +61,7 @@ x-init="$nextTick(() => initIntersectionObserver())">
             <div class="flex items-center justify-center min-h-screen px-4">
                 <div x-show="showConfirmModal" 
                      class="fixed inset-0 bg-black/50" 
-                     @click="showConfirmModal = false"
+                     x-on:click="showConfirmModal = false"
                      x-transition:enter="transition ease-out duration-300"
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100"
@@ -86,11 +86,11 @@ x-init="$nextTick(() => initIntersectionObserver())">
                         </div>
                         <p class="text-sm text-slate-600 mb-6" x-text="confirmMessage"></p>
                         <div class="flex justify-end gap-3">
-                            <button @click="showConfirmModal = false"
+                            <button x-on:click="showConfirmModal = false"
                                     class="px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
                                 Abbrechen
                             </button>
-                            <button @click="handleConfirm()"
+                            <button x-on:click="handleConfirm()"
                                     class="px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors">
                                 Bestätigen
                             </button>
@@ -227,42 +227,42 @@ x-init="$nextTick(() => initIntersectionObserver())">
         <!-- Tabs Navigation -->
         <div class="border-b border-[var(--ui-border)]/60 mb-6">
             <nav class="flex gap-1 flex-wrap">
-                <button @click="scrollToSection('general')" 
+                <button x-on:click="scrollToSection('general')" 
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'general', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'general' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Allgemein
                 </button>
-                <button @click="scrollToSection('prices')" 
+                <button x-on:click="scrollToSection('prices')" 
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'prices', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'prices' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Preise
                 </button>
-                <button @click="scrollToSection('attributes')" 
+                <button x-on:click="scrollToSection('attributes')" 
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'attributes', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'attributes' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Attribute
                 </button>
-                <button @click="scrollToSection('identification')" 
+                <button x-on:click="scrollToSection('identification')" 
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'identification', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'identification' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Identifikation
                 </button>
-                <button @click="scrollToSection('stock')" 
+                <button x-on:click="scrollToSection('stock')" 
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'stock', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'stock' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Lagerbestand
                 </button>
-                <button @click="scrollToSection('shipping')" 
+                <button x-on:click="scrollToSection('shipping')" 
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'shipping', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'shipping' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Versand
                 </button>
-                <button @click="scrollToSection('images')"
+                <button x-on:click="scrollToSection('images')"
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'images', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'images' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Artikel Bilder
                 </button>
-                <button @click="scrollToSection('additional')"
+                <button x-on:click="scrollToSection('additional')"
                         :class="{ 'border-b-2 border-[var(--ui-primary)] text-[var(--ui-primary)]': selectedTab === 'additional', 'text-[var(--ui-muted)] hover:text-[var(--ui-primary)]': selectedTab !== 'additional' }"
                         class="px-3 py-2 text-sm font-medium transition-all duration-200">
                     Erweitert
