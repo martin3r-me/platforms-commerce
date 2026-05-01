@@ -155,12 +155,12 @@ class CommerceArticle extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'created_by');
+        return $this->belongsTo(\Platform\Core\Models\User::class, 'created_by');
     }
 
     public function updater()
     {
-        return $this->belongsTo(\App\Models\User::class, 'updated_by');
+        return $this->belongsTo(\Platform\Core\Models\User::class, 'updated_by');
     }
 
     public function team()

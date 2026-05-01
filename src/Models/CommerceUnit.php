@@ -63,7 +63,7 @@ class CommerceUnit extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'user_id');
+        return $this->belongsTo(\Platform\Core\Models\User::class, 'user_id');
     }
 
     public function team()
