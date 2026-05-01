@@ -13,32 +13,42 @@
     <x-ui-page-container>
         <div class="space-y-6">
             {{-- Katalog erstellen --}}
-            <x-ui-panel title="Neuer Katalog">
-                <form wire:submit="createCatalog" class="flex items-end gap-4">
-                    <div class="flex-1">
-                        <x-ui-input-text
-                            name="name"
-                            label="Name"
-                            wire:model="name"
-                            placeholder="z.B. FoodBook 2026 DE"
-                            required
-                        />
-                    </div>
-                    <x-ui-button type="submit" variant="primary" size="sm">
-                        Katalog erstellen
-                    </x-ui-button>
-                </form>
-            </x-ui-panel>
+            <section class="bg-white rounded-lg border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-900">Neuer Katalog</h3>
+                </div>
+                <div class="p-4">
+                    <form wire:submit="createCatalog" class="flex items-end gap-4">
+                        <div class="flex-1">
+                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Name</label>
+                            <input type="text"
+                                   wire:model="name"
+                                   placeholder="z.B. FoodBook 2026 DE"
+                                   required
+                                   class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                            @error('name') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                        </div>
+                        <button type="submit"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
+                            Katalog erstellen
+                        </button>
+                    </form>
+                </div>
+            </section>
 
             {{-- Katalog Liste --}}
-            <x-ui-panel title="Kataloge" :subtitle="count($catalogs) . ' Kataloge'">
-                <div class="space-y-3">
+            <section class="bg-white rounded-lg border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-900">Kataloge</h3>
+                    <p class="text-[11px] text-gray-500">{{ count($catalogs) }} Kataloge</p>
+                </div>
+                <div class="p-4 space-y-3">
                     @forelse($catalogs as $catalog)
-                        <a href="{{ route('commerce.catalogs.show', $catalog) }}" class="block p-4 rounded-md border border-[var(--ui-border)] bg-white hover:bg-[var(--ui-muted-5)] transition" wire:navigate>
+                        <a href="{{ route('commerce.catalogs.show', $catalog) }}" class="block p-4 rounded-md border border-gray-200 bg-white hover:bg-blue-50/50 transition-colors" wire:navigate>
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
                                     <div class="flex items-center gap-2">
-                                        <h3 class="font-semibold text-[var(--ui-secondary)]">{{ $catalog->name }}</h3>
+                                        <h3 class="text-[13px] font-semibold text-gray-900">{{ $catalog->name }}</h3>
                                         @php
                                             $statusColors = [
                                                 'draft' => 'bg-slate-100 text-slate-700',
@@ -52,26 +62,26 @@
                                             ];
                                             $statusValue = $catalog->status?->value ?? 'draft';
                                         @endphp
-                                        <span class="text-xs px-2 py-0.5 rounded-full {{ $statusColors[$statusValue] ?? 'bg-slate-100 text-slate-700' }}">
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[11px] font-medium {{ $statusColors[$statusValue] ?? 'bg-slate-100 text-slate-700' }}">
                                             {{ $statusLabels[$statusValue] ?? $statusValue }}
                                         </span>
                                     </div>
-                                    <div class="mt-2 flex items-center gap-4 text-xs text-[var(--ui-muted)]">
+                                    <div class="mt-2 flex items-center gap-4 text-[11px] text-gray-400">
                                         <span>{{ $catalog->slug }}</span>
                                         <span>{{ $catalog->sections_count }} {{ $catalog->sections_count === 1 ? 'Sektion' : 'Sektionen' }}</span>
                                         <span>{{ $catalog->created_at->format('d.m.Y') }}</span>
                                     </div>
                                 </div>
-                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-[var(--ui-muted)]')
+                                @svg('heroicon-o-chevron-right', 'w-5 h-5 text-gray-400')
                             </div>
                         </a>
                     @empty
-                        <div class="p-6 text-center text-[var(--ui-muted)] bg-white rounded-md border border-[var(--ui-border)]">
-                            <p>Noch keine Kataloge vorhanden.</p>
+                        <div class="p-6 text-center text-gray-500 bg-white rounded-md border border-gray-200">
+                            <p class="text-[13px]">Noch keine Kataloge vorhanden.</p>
                         </div>
                     @endforelse
                 </div>
-            </x-ui-panel>
+            </section>
         </div>
     </x-ui-page-container>
 
@@ -79,20 +89,13 @@
         <x-ui-page-sidebar title="Info" width="w-80" :defaultOpen="true" storeKey="sidebarOpen" side="left">
             <div class="p-6 space-y-6">
                 <div>
-                    <h3 class="text-sm font-bold text-[var(--ui-secondary)] uppercase tracking-wider mb-4">Navigation</h3>
-                    <div class="space-y-2">
-                        <x-ui-button
-                            variant="secondary-outline"
-                            size="sm"
-                            :href="route('commerce.index')"
-                            wire:navigate
-                            class="w-full"
-                        >
-                            <span class="flex items-center gap-2">
-                                @svg('heroicon-o-arrow-left', 'w-4 h-4')
-                                Zum Dashboard
-                            </span>
-                        </x-ui-button>
+                    <h3 class="text-[11px] font-medium text-gray-500 uppercase tracking-wide mb-4">Navigation</h3>
+                    <div class="space-y-1">
+                        <a href="{{ route('commerce.index') }}" wire:navigate
+                           class="flex items-center gap-2 px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-700 text-[13px] font-medium hover:bg-gray-50 transition-colors w-full">
+                            @svg('heroicon-o-arrow-left', 'w-4 h-4')
+                            Zum Dashboard
+                        </a>
                     </div>
                 </div>
             </div>
@@ -102,11 +105,11 @@
     <x-slot name="activity">
         <x-ui-page-sidebar title="Aktivitäten" width="w-80" :defaultOpen="false" storeKey="activityOpen" side="right">
             <div class="p-4 space-y-4">
-                <div class="text-sm text-[var(--ui-muted)]">Letzte Aktivitäten</div>
-                <div class="space-y-3 text-sm">
-                    <div class="p-2 rounded border border-[var(--ui-border)]/60 bg-[var(--ui-muted-5)]">
-                        <div class="font-medium text-[var(--ui-secondary)] truncate">Katalog-Übersicht geladen</div>
-                        <div class="text-[var(--ui-muted)]">Gerade eben</div>
+                <div class="text-[13px] text-gray-500">Letzte Aktivitäten</div>
+                <div class="space-y-2">
+                    <div class="p-2 rounded-md border border-gray-200 bg-gray-50">
+                        <div class="font-medium text-gray-900 text-[13px] truncate">Katalog-Übersicht geladen</div>
+                        <div class="text-[11px] text-gray-500">Gerade eben</div>
                     </div>
                 </div>
             </div>
