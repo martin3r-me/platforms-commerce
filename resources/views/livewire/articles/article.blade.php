@@ -1,7 +1,3 @@
-@push('scripts')
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@@11" defer></script>
-@endpush
-
 <x-ui-page x-data="{ 
     selectedTab: 'general',
     selectedColor: @entangle('article.color').live || '#000000',
