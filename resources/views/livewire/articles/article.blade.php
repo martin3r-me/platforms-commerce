@@ -298,7 +298,6 @@ x-init="$nextTick(() => initIntersectionObserver())">
                             :errorKey="'article.long_description'"
                         />
 
-                        <livewire:components.hero.index :model="$article" />
                     </div>
 
                     <!-- Zusätzliche Details -->
@@ -707,7 +706,8 @@ x-init="$nextTick(() => initIntersectionObserver())">
         <!-- Images Section -->
         <section id="images" class="scroll-mt-4">
             <x-ui-panel title="Artikel Bilder">
-                <livewire:components.uploads.index :model="$article" />
+                {{-- TODO: Upload-Komponente einbinden wenn verfügbar --}}
+                <p class="text-sm text-slate-500">Artikelbilder werden hier angezeigt, sobald die Upload-Komponente verfügbar ist.</p>
             </x-ui-panel>
         </section>
 
@@ -715,8 +715,8 @@ x-init="$nextTick(() => initIntersectionObserver())">
         <section id="additional" class="scroll-mt-4">
             <x-ui-panel title="Zusatz">
                 <div class="space-y-6">
-                    <livewire:components.toolbox.index :model="$article" />
-                    <livewire:components.custom-fields.index :model="$article" />
+                    {{-- TODO: Toolbox + Custom-Fields Komponenten einbinden wenn verfügbar --}}
+                    <p class="text-sm text-slate-500">Zusatzfelder werden hier angezeigt, sobald die Komponenten verfügbar sind.</p>
                 </div>
             </x-ui-panel>
         </section>

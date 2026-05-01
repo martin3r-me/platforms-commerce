@@ -171,18 +171,11 @@
                             :errorKey="'product.description'"
                         />
 
-                        <livewire:components.hero.index :model="$product" />
                     </div>
 
                     <!-- Context Section -->
                     <div class="space-y-4">
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200/60 p-4">
-                            <div class="flex items-center mb-2">
-                                <x-heroicon-o-tag class="h-5 w-5 text-slate-400 mr-2"/>
-                                <label class="text-sm font-medium text-slate-700">Kontext</label>
-                            </div>
-                            @livewire('components.context.index', ['model' => $product], key("product-context-" .$product->id))
-                        </div>
+                        {{-- TODO: Context-Komponente einbinden wenn verfügbar --}}
                     </div>
                 </div>
             </x-ui-panel>
@@ -281,8 +274,8 @@
         <section id="additional" class="scroll-mt-4">
             <x-ui-panel title="Zusatz">
                 <div class="space-y-6">
-                    <livewire:components.toolbox.index :model="$product" />
-                    <livewire:components.custom-fields.index :model="$product" />
+                    {{-- TODO: Toolbox + Custom-Fields Komponenten einbinden wenn verfügbar --}}
+                    <p class="text-sm text-slate-500">Zusatzfelder werden hier angezeigt, sobald die Komponenten verfügbar sind.</p>
                 </div>
             </x-ui-panel>
         </section>
@@ -290,7 +283,8 @@
         <!-- Produktbilder Section -->
         <section id="attachments" class="scroll-mt-4">
             <x-ui-panel title="Produktbilder">
-                <livewire:components.uploads.index :model="$product" />
+                {{-- TODO: Upload-Komponente einbinden wenn verfügbar --}}
+                <p class="text-sm text-slate-500">Produktbilder werden hier angezeigt, sobald die Upload-Komponente verfügbar ist.</p>
             </x-ui-panel>
         </section>
     </x-ui-page-container>
