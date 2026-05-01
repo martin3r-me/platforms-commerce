@@ -19,37 +19,65 @@
         <div class="space-y-6">
             {{-- Artikel Liste --}}
             <section class="bg-white rounded-lg border border-gray-200">
-                <div class="px-4 py-3 border-b border-gray-200">
-                    <h3 class="text-sm font-semibold text-gray-900">Artikel</h3>
-                    <p class="text-[11px] text-gray-500">{{ count($articles) }} Artikel</p>
+                <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">Artikel</h3>
+                        <p class="text-[11px] text-gray-500">{{ count($articles) }} Artikel</p>
+                    </div>
                 </div>
-                <div class="p-4 space-y-3">
-                    @forelse($articles as $article)
-                        <a href="{{ route('commerce.articles.show', $article) }}" class="block p-4 rounded-md border border-gray-200 bg-white hover:bg-blue-50/50 transition-colors" wire:navigate>
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <h3 class="text-[13px] font-semibold text-gray-900">{{ $article->name }}</h3>
-                                    @if($article->description)
-                                        <p class="text-[13px] text-gray-500 mt-1">{{ Str::limit($article->description, 100) }}</p>
-                                    @endif
-                                    <div class="mt-2 flex items-center gap-4 text-[11px] text-gray-400">
+                @if(count($articles) > 0)
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50">
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Name</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Kategorie</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">SKU</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Typ</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Erstellt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($articles as $article)
+                                <tr class="border-b border-gray-100 hover:bg-blue-50/50 transition-colors cursor-pointer"
+                                    wire:key="article-{{ $article->id }}"
+                                    x-on:click="window.Livewire.navigate('{{ route('commerce.articles.show', $article) }}')">
+                                    <td class="py-2.5 px-4">
+                                        <div class="text-[13px] font-medium text-gray-900">{{ $article->name }}</div>
+                                        @if($article->description)
+                                            <div class="text-[11px] text-gray-400 truncate max-w-xs">{{ Str::limit($article->description, 60) }}</div>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4">
                                         @if($article->category)
-                                            <span>{{ $article->category->name }}</span>
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-700">{{ $article->category->name }}</span>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">&mdash;</span>
                                         @endif
-                                        @if($article->sku)
-                                            <span>SKU: {{ $article->sku }}</span>
+                                    </td>
+                                    <td class="py-2.5 px-4 text-[13px] text-gray-500 font-mono">{{ $article->sku ?? '—' }}</td>
+                                    <td class="py-2.5 px-4">
+                                        @if($article->articleType)
+                                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[11px] font-medium"
+                                                  style="background-color: {{ $article->articleType->color ?? '#e5e7eb' }}20; color: {{ $article->articleType->color ?? '#6b7280' }}">
+                                                @if($article->articleType->color)
+                                                    <span class="w-2 h-2 rounded-full" style="background-color: {{ $article->articleType->color }}"></span>
+                                                @endif
+                                                {{ $article->articleType->name }}
+                                            </span>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">&mdash;</span>
                                         @endif
-                                        <span>{{ $article->created_at->format('d.m.Y') }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="p-6 text-center text-gray-500 bg-white rounded-md border border-gray-200">
-                            <p class="text-[13px]">Noch keine Artikel vorhanden.</p>
-                        </div>
-                    @endforelse
-                </div>
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right text-[11px] text-gray-400">{{ $article->created_at->format('d.m.Y') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="p-8 text-center">
+                        <p class="text-[13px] text-gray-400">Noch keine Artikel vorhanden.</p>
+                    </div>
+                @endif
             </section>
         </div>
     </x-ui-page-container>

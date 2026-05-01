@@ -45,34 +45,60 @@
 
             {{-- Produkte Liste --}}
             <section class="bg-white rounded-lg border border-gray-200">
-                <div class="px-4 py-3 border-b border-gray-200">
-                    <h3 class="text-sm font-semibold text-gray-900">Produkte</h3>
-                    <p class="text-[11px] text-gray-500">{{ count($products) }} Produkt(e)</p>
+                <div class="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-semibold text-gray-900">Produkte</h3>
+                        <p class="text-[11px] text-gray-500">{{ count($products) }} Produkt(e)</p>
+                    </div>
                 </div>
-                <div class="p-4 space-y-3">
-                    @forelse($products as $product)
-                        <a href="{{ route('commerce.products.show', $product) }}" class="block p-4 rounded-md border border-gray-200 bg-white hover:bg-blue-50/50 transition-colors" wire:navigate>
-                            <div class="flex items-start justify-between">
-                                <div class="flex-1">
-                                    <h3 class="text-[13px] font-semibold text-gray-900">{{ $product->name }}</h3>
-                                    @if($product->description)
-                                        <p class="text-[13px] text-gray-500 mt-1">{{ Str::limit($product->description, 100) }}</p>
-                                    @endif
-                                    <div class="mt-2 flex items-center gap-4 text-[11px] text-gray-400">
-                                        @if($product->price)
-                                            <span>{{ number_format($product->price, 2, ',', '.') }} EUR</span>
+                @if(count($products) > 0)
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-200 bg-gray-50">
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Name</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Farbe</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Preis</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Erstellt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($products as $product)
+                                <tr class="border-b border-gray-100 hover:bg-blue-50/50 transition-colors cursor-pointer"
+                                    wire:key="product-{{ $product->id }}"
+                                    x-on:click="window.Livewire.navigate('{{ route('commerce.products.show', $product) }}')">
+                                    <td class="py-2.5 px-4">
+                                        <div class="text-[13px] font-medium text-gray-900">{{ $product->name }}</div>
+                                        @if($product->description)
+                                            <div class="text-[11px] text-gray-400 truncate max-w-xs">{{ Str::limit($product->description, 60) }}</div>
                                         @endif
-                                        <span>{{ $product->created_at->format('d.m.Y') }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </a>
-                    @empty
-                        <div class="p-6 text-center text-gray-500 bg-white rounded-md border border-gray-200">
-                            <p class="text-[13px]">Noch keine Produkte vorhanden.</p>
-                        </div>
-                    @endforelse
-                </div>
+                                    </td>
+                                    <td class="py-2.5 px-4">
+                                        @if($product->color)
+                                            <span class="inline-flex items-center gap-1.5 text-[13px] text-gray-700">
+                                                <span class="w-3 h-3 rounded-full border border-gray-200" style="background-color: {{ $product->color }}"></span>
+                                                {{ $product->color }}
+                                            </span>
+                                        @else
+                                            <span class="text-[13px] text-gray-300">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right text-[13px] text-gray-700">
+                                        @if($product->price)
+                                            {{ number_format($product->price, 2, ',', '.') }} &euro;
+                                        @else
+                                            <span class="text-gray-300">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right text-[11px] text-gray-400">{{ $product->created_at->format('d.m.Y') }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <div class="p-8 text-center">
+                        <p class="text-[13px] text-gray-400">Noch keine Produkte vorhanden.</p>
+                    </div>
+                @endif
             </section>
         </div>
     </x-ui-page-container>
