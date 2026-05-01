@@ -365,18 +365,18 @@ x-init="$nextTick(() => initIntersectionObserver())">
                     <!-- Oberer Bereich: Steuerauswahl und Preiseingabe -->
                     <div class="grid grid-cols-2 gap-6">
                         <!-- Linke Spalte: Steuerkategorie -->
-                        <div>
-                            <x-ui-input-select
-                                name="article.commerce_tax_category_id"
-                                label="Mehrwertsteuerkategorie *"
-                                :options="$taxCategories"
-                                optionValue="id"
-                                optionLabel="name"
-                                :nullable="true"
-                                nullLabel="Bitte wählen"
-                                wire:model.live="article.commerce_tax_category_id"
-                                :errorKey="'article.commerce_tax_category_id'"
-                                @if($article->articleNetPrices->count() > 0)
+                        <div x-data>
+                            @if($article->articleNetPrices->count() > 0)
+                                <x-ui-input-select
+                                    name="article.commerce_tax_category_id"
+                                    label="Mehrwertsteuerkategorie *"
+                                    :options="$taxCategories"
+                                    optionValue="id"
+                                    optionLabel="name"
+                                    :nullable="true"
+                                    nullLabel="Bitte wählen"
+                                    wire:model.live="article.commerce_tax_category_id"
+                                    :errorKey="'article.commerce_tax_category_id'"
                                     x-on:change="
                                         $event.preventDefault();
                                         const newValue = $event.target.value;
@@ -385,8 +385,20 @@ x-init="$nextTick(() => initIntersectionObserver())">
                                         confirmAction = () => $wire.set('article.commerce_tax_category_id', newValue);
                                         showConfirmModal = true;
                                     "
-                                @endif
-                            />
+                                />
+                            @else
+                                <x-ui-input-select
+                                    name="article.commerce_tax_category_id"
+                                    label="Mehrwertsteuerkategorie *"
+                                    :options="$taxCategories"
+                                    optionValue="id"
+                                    optionLabel="name"
+                                    :nullable="true"
+                                    nullLabel="Bitte wählen"
+                                    wire:model.live="article.commerce_tax_category_id"
+                                    :errorKey="'article.commerce_tax_category_id'"
+                                />
+                            @endif
                         </div>
 
                         <!-- Rechte Spalte: Preiseingabe -->
