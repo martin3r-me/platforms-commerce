@@ -87,6 +87,11 @@ return [
                     'icon'  => 'heroicon-o-cube',
                 ],
                 [
+                    'label' => 'Kataloge',
+                    'route' => 'commerce.catalogs.index',
+                    'icon'  => 'heroicon-o-book-open',
+                ],
+                [
                     'label' => 'Attribute',
                     'route' => 'commerce.attributes.index',
                     'icon'  => 'heroicon-o-tag',

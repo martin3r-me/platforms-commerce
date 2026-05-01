@@ -27,6 +27,8 @@ use Platform\Commerce\Livewire\Products\Index as ProductsIndex;
 use Platform\Commerce\Livewire\Products\Product;
 use Platform\Commerce\Livewire\Attributes\Index as AttributesIndex;
 use Platform\Commerce\Livewire\Attributes\AttributeSet;
+use Platform\Commerce\Livewire\Catalogs\Index as CatalogsIndex;
+use Platform\Commerce\Livewire\Catalogs\Catalog;
 use Platform\Commerce\Livewire\Settings\Index as SettingsIndex;
 
 /**
@@ -82,6 +84,12 @@ Route::get('/attributes', AttributesIndex::class)->name('commerce.attributes.ind
  */
 Route::get('/attributes/{commerceAttributeSet}', AttributeSet::class)
     ->name('commerce.attributes.show');
+
+/**
+ * Katalog Routes
+ */
+Route::get('/catalogs', CatalogsIndex::class)->name('commerce.catalogs.index');
+Route::get('/catalogs/{commerceCatalog}', Catalog::class)->name('commerce.catalogs.show');
 
 /**
  * Einstellungen Route
