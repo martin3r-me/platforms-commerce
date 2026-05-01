@@ -22,7 +22,7 @@ class CreateProductRuleTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/product_rules - Erstellt eine neue Produktregel. Nutze zuerst commerce.products.GET um die Produkt-ID zu finden.';
+        return 'POST /commerce/product_rules - Erstellt eine neue Produktregel. Regeltypen: Mengenlimit (max_quantity_per_order), Mindestbestellwert (min_order_value), Verkaufszeitraum (sale_period_start/end). Nutze zuerst commerce.products.GET um die Produkt-ID zu finden.';
     }
 
     public function getSchema(): array

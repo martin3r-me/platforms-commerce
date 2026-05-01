@@ -13,6 +13,14 @@
         <x-ui-page-navbar title="Attribute" icon="heroicon-o-tag" />
     </x-slot>
 
+    {{-- Actionbar mit Breadcrumbs --}}
+    <x-slot name="actionbar">
+        <x-ui-page-actionbar :breadcrumbs="[
+            ['label' => 'Commerce', 'href' => route('commerce.index'), 'icon' => 'shopping-bag'],
+            ['label' => 'Attribute'],
+        ]" />
+    </x-slot>
+
     <x-slot name="sidebar">
         <x-ui-page-sidebar title="Navigation" width="w-80" :defaultOpen="true" storeKey="sidebarOpen" side="left">
             <div class="p-6 space-y-6">

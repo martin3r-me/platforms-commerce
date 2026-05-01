@@ -18,7 +18,7 @@ class EvaluateRulesTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/rules/evaluate - Evaluiert alle aktiven Regeln für ein Produkt/Artikel mit gegebenem Kontext.';
+        return 'POST /commerce/rules/evaluate - Evaluiert alle aktiven Regeln für ein Produkt/Artikel mit gegebenem Kontext. Regeltypen: Mengenlimit (max_quantity), Mindestbestellwert (min_order_value), Verkaufszeitraum (sale_period), Pflichtfelder (mandatory_field), Produktabhängigkeit (requires_product).';
     }
 
     public function getSchema(): array
@@ -37,6 +37,7 @@ class EvaluateRulesTool implements ToolContract, ToolMetadataContract
                 'target_type' => [
                     'type' => 'string',
                     'description' => 'Typ: "product" oder "article" (ERFORDERLICH).',
+                    'enum' => ['product', 'article'],
                 ],
                 'quantity' => [
                     'type' => 'number',
@@ -53,7 +54,7 @@ class EvaluateRulesTool implements ToolContract, ToolMetadataContract
                 ],
                 'data' => [
                     'type' => 'object',
-                    'description' => 'Optional: Zusätzliche Daten für Pflichtfeld-Prüfung.',
+                    'description' => 'Optional: Key-Value-Objekt mit Felddaten für Pflichtfeld-Regeln (mandatory_field). Beispiel: {"allergens": "Nüsse", "origin": "DE"}.',
                 ],
             ],
             'required' => ['target_id', 'target_type'],

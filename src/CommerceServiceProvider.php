@@ -103,6 +103,7 @@ class CommerceServiceProvider extends ServiceProvider
             PlatformCore::registerModule([
                 'key'        => 'commerce', // Eindeutiger Schlüssel
                 'title'      => 'Commerce', // Anzeige-Name
+                'group'      => 'sales',
                 'routing'    => config('commerce.routing'),
                 'guard'      => config('commerce.guard'),
                 'navigation' => config('commerce.navigation'),

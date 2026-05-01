@@ -21,7 +21,7 @@ class CreateUnitTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/units - Erstellt eine neue Einheit.';
+        return 'POST /commerce/units - Erstellt eine neue Einheit. Einheiten werden für Artikelmengen genutzt (kg, Stück, Liter). Definiere zuerst Basis-Einheiten (is_base_unit=true), dann abgeleitete.';
     }
 
     public function getSchema(): array
@@ -43,7 +43,8 @@ class CreateUnitTool implements ToolContract, ToolMetadataContract
                 ],
                 'type' => [
                     'type' => 'string',
-                    'description' => 'Typ der Einheit, z.B. "weight", "length", "volume" (ERFORDERLICH).',
+                    'description' => 'Typ der Einheit (ERFORDERLICH). Erlaubte Werte: piece, weight, volume, length, area, time, package.',
+                    'enum' => ['piece', 'weight', 'volume', 'length', 'area', 'time', 'package'],
                 ],
                 'is_base_unit' => [
                     'type' => 'boolean',

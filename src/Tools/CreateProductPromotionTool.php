@@ -22,7 +22,7 @@ class CreateProductPromotionTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/product_promotions - Erstellt eine neue Produktaktion. Nutze zuerst commerce.products.GET um die Produkt-ID zu finden.';
+        return 'POST /commerce/product_promotions - Erstellt eine neue Produktaktion. Definiert Rabatte (absolut via discount_value oder prozentual via discount_percentage) für ein Produkt mit optionalem Zeitraum und Mindestwarenkorbwert. Nutze zuerst commerce.products.GET um die Produkt-ID zu finden.';
     }
 
     public function getSchema(): array

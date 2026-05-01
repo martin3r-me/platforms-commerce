@@ -13,16 +13,16 @@
         <x-ui-page-navbar title="Artikel" icon="heroicon-o-rectangle-stack" />
     </x-slot>
 
+    {{-- Actionbar mit Breadcrumbs --}}
+    <x-slot name="actionbar">
+        <x-ui-page-actionbar :breadcrumbs="[
+            ['label' => 'Commerce', 'href' => route('commerce.index'), 'icon' => 'shopping-bag'],
+            ['label' => 'Artikel'],
+        ]" />
+    </x-slot>
+
     <x-ui-page-container>
         <div class="space-y-6">
-            {{-- Header --}}
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-[var(--ui-secondary)]">Artikel</h1>
-                    <p class="text-[var(--ui-muted)] mt-1">Verwalte deine Artikel</p>
-                </div>
-            </div>
-
             {{-- Artikel Liste --}}
             <x-ui-panel title="Artikel" :subtitle="count($articles) . ' Artikel'">
                 <div class="space-y-3">

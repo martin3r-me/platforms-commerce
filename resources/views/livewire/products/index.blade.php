@@ -13,16 +13,16 @@
         <x-ui-page-navbar title="Produkte" icon="heroicon-o-cube" />
     </x-slot>
 
+    {{-- Actionbar mit Breadcrumbs --}}
+    <x-slot name="actionbar">
+        <x-ui-page-actionbar :breadcrumbs="[
+            ['label' => 'Commerce', 'href' => route('commerce.index'), 'icon' => 'shopping-bag'],
+            ['label' => 'Produkte'],
+        ]" />
+    </x-slot>
+
     <x-ui-page-container>
         <div class="space-y-6">
-            {{-- Header --}}
-            <div class="flex items-center justify-between">
-                <div>
-                    <h1 class="text-2xl font-bold text-[var(--ui-secondary)]">Produkte</h1>
-                    <p class="text-[var(--ui-muted)] mt-1">Verwalte deine Produkte</p>
-                </div>
-            </div>
-
             {{-- Create Product Form --}}
             <x-ui-panel title="Neues Produkt erstellen">
                 <x-ui-form-grid :cols="2" :gap="4">

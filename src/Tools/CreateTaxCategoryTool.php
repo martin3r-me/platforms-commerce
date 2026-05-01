@@ -21,7 +21,7 @@ class CreateTaxCategoryTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/tax-categories - Erstellt eine neue Steuerkategorie.';
+        return 'POST /commerce/tax-categories - Erstellt eine neue Steuerkategorie. Steuerkategorien (z.B. "Normalsatz 19%", "Ermäßigt 7%") werden Artikeln über TaxRules zugewiesen (commerce.tax_rules.POST).';
     }
 
     public function getSchema(): array

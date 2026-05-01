@@ -18,7 +18,7 @@ class ConvertUnitTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/units/convert - Rechnet eine Menge von einer Einheit in eine andere um.';
+        return 'POST /commerce/units/convert - Rechnet eine Menge von einer Einheit in eine andere um. Voraussetzung: Einheiten und Umrechnungen müssen existieren (commerce.units.GET, commerce.unit_conversions.GET).';
     }
 
     public function getSchema(): array

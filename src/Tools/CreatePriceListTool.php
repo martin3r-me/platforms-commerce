@@ -43,7 +43,8 @@ class CreatePriceListTool implements ToolContract, ToolMetadataContract
                 ],
                 'price_type' => [
                     'type' => 'string',
-                    'description' => 'Optional: Preistyp. Default: "standard".',
+                    'description' => 'Optional: Preistyp. Default: "standard". Erlaubte Werte: standard, tier, time_based, customer_group, promotional.',
+                    'enum' => ['standard', 'tier', 'time_based', 'customer_group', 'promotional'],
                 ],
                 'priority' => [
                     'type' => 'integer',

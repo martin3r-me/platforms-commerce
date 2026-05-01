@@ -8,6 +8,7 @@ use Platform\Commerce\Models\CommerceTaxCategory;
 use Platform\Commerce\Models\CommerceSalesContext;
 use Platform\Commerce\Models\CommerceTaxRule;
 use Platform\Commerce\Models\CommerceArticleType;
+use Platform\Commerce\Models\CommerceArticleCategory;
 use Platform\Commerce\Services\TaxRuleManager;
 
 class Index extends Component
@@ -25,6 +26,12 @@ class Index extends Component
     public $type_description;
     public $type_color;
 
+    // Article Category fields
+    public $cat_name;
+    public $cat_description;
+    public $cat_color;
+    public $cat_parent_id;
+
     // Edit fields
     public $editCategoryId;
     public $editCategoryName;
@@ -38,6 +45,12 @@ class Index extends Component
     public $editTypeName;
     public $editTypeDescription;
     public $editTypeColor;
+
+    public $editCatId;
+    public $editCatName;
+    public $editCatDescription;
+    public $editCatColor;
+    public $editCatParentId;
 
     // Data
     public $matrix = [];
@@ -73,6 +86,23 @@ class Index extends Component
     protected function getTeamArticleTypes()
     {
         return CommerceArticleType::where('team_id', Auth::user()->currentTeam->id)
+            ->orderBy('name')
+            ->get();
+    }
+
+    protected function getTeamArticleCategories()
+    {
+        return CommerceArticleCategory::where('team_id', Auth::user()->currentTeam->id)
+            ->whereNull('parent_id')
+            ->with('descendants')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+    }
+
+    protected function getAllArticleCategories()
+    {
+        return CommerceArticleCategory::where('team_id', Auth::user()->currentTeam->id)
             ->orderBy('name')
             ->get();
     }
@@ -201,7 +231,6 @@ class Index extends Component
     {
         $context = CommerceSalesContext::find($id);
         if ($context) {
-            // Delete related tax rules first (cascade would handle it, but be explicit)
             CommerceTaxRule::where('commerce_sales_context_id', $id)->delete();
             $context->delete();
             $this->loadMatrix();
@@ -273,12 +302,90 @@ class Index extends Component
         }
     }
 
+    // ── Article Category CRUD ──
+
+    public function saveArticleCategory()
+    {
+        $this->validate([
+            'cat_name' => 'required|string|max:255',
+            'cat_description' => 'nullable|string|max:1000',
+            'cat_color' => 'nullable|string|max:7',
+            'cat_parent_id' => 'nullable|integer|exists:commerce_article_categories,id',
+        ]);
+
+        CommerceArticleCategory::create([
+            'name' => $this->cat_name,
+            'description' => $this->cat_description,
+            'color' => $this->cat_color,
+            'parent_id' => $this->cat_parent_id ?: null,
+            'team_id' => Auth::user()->currentTeam->id,
+        ]);
+
+        $this->reset(['cat_name', 'cat_description', 'cat_color', 'cat_parent_id']);
+        $this->dispatch('notify', type: 'success', message: 'Artikel-Kategorie wurde angelegt.');
+    }
+
+    public function editArticleCategory($id)
+    {
+        $cat = CommerceArticleCategory::find($id);
+        if ($cat) {
+            $this->editCatId = $cat->id;
+            $this->editCatName = $cat->name;
+            $this->editCatDescription = $cat->description;
+            $this->editCatColor = $cat->color;
+            $this->editCatParentId = $cat->parent_id;
+            $this->dispatch('open-edit-article-category-modal');
+        }
+    }
+
+    public function updateArticleCategory()
+    {
+        $this->validate([
+            'editCatName' => 'required|string|max:255',
+            'editCatDescription' => 'nullable|string|max:1000',
+            'editCatColor' => 'nullable|string|max:7',
+            'editCatParentId' => 'nullable|integer|exists:commerce_article_categories,id',
+        ]);
+
+        $cat = CommerceArticleCategory::find($this->editCatId);
+        if ($cat) {
+            // Prevent setting self as parent
+            $parentId = $this->editCatParentId ?: null;
+            if ($parentId == $cat->id) {
+                $parentId = null;
+            }
+
+            $cat->update([
+                'name' => $this->editCatName,
+                'description' => $this->editCatDescription,
+                'color' => $this->editCatColor,
+                'parent_id' => $parentId,
+            ]);
+            $this->dispatch('notify', type: 'success', message: 'Artikel-Kategorie wurde aktualisiert.');
+        }
+
+        $this->reset(['editCatId', 'editCatName', 'editCatDescription', 'editCatColor', 'editCatParentId']);
+    }
+
+    public function deleteArticleCategory($id)
+    {
+        $cat = CommerceArticleCategory::find($id);
+        if ($cat) {
+            // Move children to parent (or root)
+            CommerceArticleCategory::where('parent_id', $id)->update(['parent_id' => $cat->parent_id]);
+            $cat->delete();
+            $this->dispatch('notify', type: 'success', message: 'Artikel-Kategorie wurde gelöscht. Unterkategorien wurden nach oben verschoben.');
+        }
+    }
+
     public function render()
     {
         return view('commerce::livewire.settings.index', [
             'categories' => $this->getTeamCategories(),
             'contexts' => $this->getTeamContexts(),
             'articleTypes' => $this->getTeamArticleTypes(),
+            'articleCategories' => $this->getTeamArticleCategories(),
+            'allArticleCategories' => $this->getAllArticleCategories(),
         ])->layout('platform::layouts.app');
     }
 }

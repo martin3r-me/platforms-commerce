@@ -21,7 +21,7 @@ class CreateWarehouseTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/warehouses - Erstellt ein neues Lager.';
+        return 'POST /commerce/warehouses - Erstellt ein neues Lager für Bestandsverwaltung. Nach Erstellung: Bestände über commerce.stock_movements.POST einbuchen (type="inbound").';
     }
 
     public function getSchema(): array

@@ -49,7 +49,8 @@ class UpdateUnitTool implements ToolContract, ToolMetadataContract
                 ],
                 'type' => [
                     'type' => 'string',
-                    'description' => 'Optional: Neuer Typ der Einheit.',
+                    'description' => 'Optional: Neuer Typ der Einheit. Erlaubte Werte: piece, weight, volume, length, area, time, package.',
+                    'enum' => ['piece', 'weight', 'volume', 'length', 'area', 'time', 'package'],
                 ],
                 'is_base_unit' => [
                     'type' => 'boolean',

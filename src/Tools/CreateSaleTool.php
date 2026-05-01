@@ -39,7 +39,8 @@ class CreateSaleTool implements ToolContract, ToolMetadataContract
                 ],
                 'status' => [
                     'type' => 'string',
-                    'description' => 'Optional: Status (default: "draft").',
+                    'description' => 'Optional: Status (default: "draft"). Erlaubte Werte: draft, pending, confirmed, completed, cancelled, refunded.',
+                    'enum' => ['draft', 'pending', 'confirmed', 'completed', 'cancelled', 'refunded'],
                 ],
                 'paid_at' => [
                     'type' => 'string',

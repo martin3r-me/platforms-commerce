@@ -22,7 +22,7 @@ class CreateStockMovementTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/stock_movements - Erstellt eine Lagerbewegung (inbound/outbound/adjustment). Für inbound/outbound wird der InventoryManager verwendet.';
+        return 'POST /commerce/stock_movements - Erstellt eine Lagerbewegung (inbound/outbound/adjustment). Nutze commerce.warehouses.GET + commerce.articles.GET für IDs. Für inbound/outbound wird der InventoryManager verwendet.';
     }
 
     public function getSchema(): array

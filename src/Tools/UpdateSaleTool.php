@@ -45,7 +45,8 @@ class UpdateSaleTool implements ToolContract, ToolMetadataContract
                 ],
                 'status' => [
                     'type' => 'string',
-                    'description' => 'Optional: Neuer Status.',
+                    'description' => 'Optional: Neuer Status. Erlaubte Werte: draft, pending, confirmed, completed, cancelled, refunded.',
+                    'enum' => ['draft', 'pending', 'confirmed', 'completed', 'cancelled', 'refunded'],
                 ],
                 'paid_at' => [
                     'type' => 'string',

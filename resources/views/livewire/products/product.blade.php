@@ -26,6 +26,15 @@
         </x-ui-page-navbar>
     </x-slot>
 
+    {{-- Actionbar mit Breadcrumbs --}}
+    <x-slot name="actionbar">
+        <x-ui-page-actionbar :breadcrumbs="[
+            ['label' => 'Commerce', 'href' => route('commerce.index'), 'icon' => 'shopping-bag'],
+            ['label' => 'Produkte', 'href' => route('commerce.products.index')],
+            ['label' => $product->name],
+        ]" />
+    </x-slot>
+
     <x-slot name="sidebar">
         <x-ui-page-sidebar title="Übersicht" width="w-80" :defaultOpen="true" storeKey="sidebarOpen" side="left">
             <div class="p-6 space-y-6">

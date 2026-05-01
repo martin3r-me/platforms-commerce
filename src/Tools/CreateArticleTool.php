@@ -22,7 +22,7 @@ class CreateArticleTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/articles - Erstellt einen Artikel (Basiseinheit mit Preis/SKU). WICHTIG: Artikel sind die Grundlage für Produkte. Erst Artikel anlegen, dann über SlotVariants mit Produkten verbinden.';
+        return 'POST /commerce/articles - Erstellt einen Artikel (Basiseinheit mit Preis/SKU). WICHTIG: Artikel sind die Grundlage für Produkte. Erst Artikel anlegen, dann über SlotVariants mit Produkten verbinden. Optional vorher: Artikel-Typen (commerce.article_types.GET) und Kategorien (commerce.categories.GET) anlegen.';
     }
 
     public function getSchema(): array

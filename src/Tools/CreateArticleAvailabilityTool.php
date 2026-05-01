@@ -21,7 +21,7 @@ class CreateArticleAvailabilityTool implements ToolContract, ToolMetadataContrac
 
     public function getDescription(): string
     {
-        return 'POST /commerce/article-availabilities - Erstellt eine neue Artikel-Verfügbarkeit für einen Sales-Context.';
+        return 'POST /commerce/article-availabilities - Erstellt eine neue Artikel-Verfügbarkeit für einen Sales-Context. Voraussetzung: Artikel (commerce.articles.GET) und Sales-Context (commerce.sales_contexts.GET) müssen existieren.';
     }
 
     public function getSchema(): array

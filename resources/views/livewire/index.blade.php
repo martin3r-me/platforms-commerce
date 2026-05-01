@@ -14,6 +14,13 @@
         <x-ui-page-navbar title="Commerce Dashboard" icon="heroicon-o-shopping-bag" />
     </x-slot>
 
+    {{-- Actionbar mit Breadcrumbs --}}
+    <x-slot name="actionbar">
+        <x-ui-page-actionbar :breadcrumbs="[
+            ['label' => 'Commerce', 'icon' => 'shopping-bag'],
+        ]" />
+    </x-slot>
+
     {{-- Hauptinhalt --}}
     <x-ui-page-container>
         <div class="space-y-6">

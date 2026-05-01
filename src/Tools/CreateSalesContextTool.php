@@ -21,7 +21,7 @@ class CreateSalesContextTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'POST /commerce/sales-contexts - Erstellt einen neuen Verkaufskontext.';
+        return 'POST /commerce/sales-contexts - Erstellt einen neuen Verkaufskontext. Ein Verkaufskontext definiert einen Kanal (z.B. Online-Shop, Filiale, Lieferung). Wird für Preise, Steuern und Verfügbarkeit referenziert.';
     }
 
     public function getSchema(): array
