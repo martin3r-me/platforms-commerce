@@ -28,6 +28,10 @@
             @svg('heroicon-o-cube', 'w-4 h-4 text-[var(--ui-secondary)]')
             <span class="ml-2 text-sm">Produkte</span>
         </x-ui-sidebar-item>
+        <x-ui-sidebar-item :href="route('commerce.catalogs.index')">
+            @svg('heroicon-o-book-open', 'w-4 h-4 text-[var(--ui-secondary)]')
+            <span class="ml-2 text-sm">Kataloge</span>
+        </x-ui-sidebar-item>
         <x-ui-sidebar-item :href="route('commerce.attributes.index')">
             @svg('heroicon-o-tag', 'w-4 h-4 text-[var(--ui-secondary)]')
             <span class="ml-2 text-sm">Attribute</span>
@@ -49,6 +53,9 @@
             </a>
             <a href="{{ route('commerce.products.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
                 @svg('heroicon-o-cube', 'w-5 h-5')
+            </a>
+            <a href="{{ route('commerce.catalogs.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
+                @svg('heroicon-o-book-open', 'w-5 h-5')
             </a>
             <a href="{{ route('commerce.attributes.index') }}" wire:navigate class="flex items-center justify-center p-2 rounded-md text-[var(--ui-secondary)] hover:bg-[var(--ui-muted-5)]">
                 @svg('heroicon-o-tag', 'w-5 h-5')
