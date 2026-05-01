@@ -37,6 +37,43 @@ class CoreCatalogArticleResolver implements CatalogArticleResolverInterface
             default    => $basePrice + (float) ($product->price_deviation_value ?? 0),
         };
 
+        return $this->buildResult($product, $article, $netPrice, $vk, $mwst);
+    }
+
+    public function resolveByArticleNumber(string $articleNumber, int $teamId): ?array
+    {
+        $product = CommerceProduct::with(['article.category', 'article.taxCategory', 'article.salesUnit'])
+            ->whereHas('article', fn ($q) => $q->where('team_id', $teamId)->where('sku', $articleNumber))
+            ->first();
+
+        if (!$product || !$product->article) {
+            return null;
+        }
+
+        $article = $product->article;
+
+        $netPrice = $article->articleNetPrices()
+            ->where(function ($q) {
+                $q->whereNull('valid_until')
+                    ->orWhere('valid_until', '>=', now());
+            })
+            ->orderByDesc('valid_from')
+            ->value('net_price');
+
+        $taxRate = $article->taxCategory?->default_rate;
+        $mwst = $taxRate !== null ? ((int) $taxRate) . '%' : null;
+
+        $basePrice = (float) ($article->price ?? 0);
+        $vk = match ($product->price_deviation_type) {
+            'relative' => $basePrice * (1 + ((float) ($product->price_deviation_value ?? 0) / 100)),
+            default    => $basePrice + (float) ($product->price_deviation_value ?? 0),
+        };
+
+        return $this->buildResult($product, $article, $netPrice, $vk, $mwst);
+    }
+
+    private function buildResult(CommerceProduct $product, $article, $netPrice, float $vk, ?string $mwst): array
+    {
         return [
             'id'               => $product->id,
             'name'             => $article->name,

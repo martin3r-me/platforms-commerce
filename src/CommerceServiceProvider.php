@@ -67,6 +67,10 @@ class CommerceServiceProvider extends ServiceProvider
             \Platform\Core\Contracts\CatalogListProviderInterface::class,
             \Platform\Commerce\Services\CoreCatalogListProvider::class
         );
+        $this->app->singleton(
+            \Platform\Core\Contracts\CatalogArticleCategoryListProviderInterface::class,
+            \Platform\Commerce\Services\CoreCatalogArticleCategoryListProvider::class
+        );
     }
 
     /**
