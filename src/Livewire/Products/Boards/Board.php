@@ -15,7 +15,8 @@ class Board extends Component
     public function mount(CommerceProductBoard $commerceProductBoard)
     {
         $this->board = $commerceProductBoard->load([
-            'productBoardSlots.products',
+            'productBoardSlots.products.article',
+            'productBoardSlots.products.productSlots',
         ]);
     }
 
