@@ -88,12 +88,12 @@ class CommerceServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Relation::enforceMorphMap([
+        Relation::morphMap([
             'commerce_product' => \Platform\Commerce\Models\CommerceProduct::class,
             'commerce_article' => \Platform\Commerce\Models\CommerceArticle::class,
             'commerce_sale'    => \Platform\Commerce\Models\CommerceSale::class,
             'commerce_catalog' => \Platform\Commerce\Models\CommerceCatalog::class,
-        ], false);
+        ]);
 
         /**
          * SCHRITT 1: Modul-Registrierung prüfen
