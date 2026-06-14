@@ -189,6 +189,15 @@
                             </form>
                         </div>
 
+                        {{-- Hint-Box: Was sind Boards? --}}
+                        <div class="flex items-start gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 mb-4">
+                            @svg('heroicon-o-information-circle', 'w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0')
+                            <div class="text-[12px] text-blue-800">
+                                <p class="mb-1"><strong class="text-blue-900">Sektionen</strong> sind die thematische Gliederung dieses Katalogs (z.B. „Stundensätze").</p>
+                                <p><strong class="text-blue-900">Boards</strong> sind wiederverwendbare Slot-Container — sinnvoll für Konfiguratoren (Pizza mit Größe + Belag) oder wenn dasselbe Sortiment in mehreren Katalogen genutzt wird. Bei einfacher 1-Board-pro-Sektion-Verwendung wird der Board-Header automatisch ausgeblendet.</p>
+                            </div>
+                        </div>
+
                         {{-- Sections List --}}
                         <div class="space-y-4">
                             @forelse($catalog->sections as $section)
@@ -207,34 +216,49 @@
 
                                     {{-- Attached Boards mit Slots & Products --}}
                                     <div class="ml-8">
-                                        @if($section->productBoards->count() > 0)
+                                        @php $boardCount = $section->productBoards->count(); @endphp
+                                        @if($boardCount > 0)
                                             <div class="space-y-3 mb-3">
                                                 @foreach($section->productBoards as $board)
-                                                    <div class="rounded-md border border-gray-200 bg-white">
-                                                        {{-- Board header --}}
-                                                        <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50 rounded-t-md">
-                                                            <div class="flex items-center gap-2">
-                                                                @if($board->color)
-                                                                    <span class="w-3 h-3 rounded-full" style="background-color: {{ $board->color }}"></span>
-                                                                @endif
-                                                                <span class="text-[13px] font-medium text-gray-900">{{ $board->name }}</span>
-                                                                @if($board->description)
-                                                                    <span class="text-[11px] text-gray-400 truncate max-w-md">— {{ $board->description }}</span>
-                                                                @endif
+                                                    <div @class([
+                                                        'rounded-md border border-gray-200 bg-white' => $boardCount > 1,
+                                                    ])>
+                                                        @if($boardCount > 1)
+                                                            {{-- Board header — nur wenn mehrere Boards in dieser Sektion --}}
+                                                            <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50 rounded-t-md">
+                                                                <div class="flex items-center gap-2">
+                                                                    @if($board->color)
+                                                                        <span class="w-3 h-3 rounded-full" style="background-color: {{ $board->color }}"></span>
+                                                                    @endif
+                                                                    <span class="text-[13px] font-medium text-gray-900">{{ $board->name }}</span>
+                                                                    @if($board->description)
+                                                                        <span class="text-[11px] text-gray-400 truncate max-w-md">— {{ $board->description }}</span>
+                                                                    @endif
+                                                                </div>
+                                                                <div class="flex items-center gap-2">
+                                                                    <a href="{{ route('commerce.products.boards.show', $board) }}" wire:navigate
+                                                                       class="text-[11px] text-[#166EE1] hover:underline">Kanban öffnen</a>
+                                                                    <button wire:click="detachBoard({{ $section->id }}, {{ $board->id }})"
+                                                                            wire:confirm="Board '{{ $board->name }}' von Sektion '{{ $section->name }}' trennen?"
+                                                                            class="p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                                                        @svg('heroicon-o-x-mark', 'w-4 h-4')
+                                                                    </button>
+                                                                </div>
                                                             </div>
-                                                            <div class="flex items-center gap-2">
+                                                        @else
+                                                            {{-- 1 Board: nur diskreter Kanban-Link rechts --}}
+                                                            <div class="flex items-center justify-end gap-3 text-[10px] mb-1.5">
+                                                                <span class="text-gray-300">Board: {{ $board->name }}</span>
                                                                 <a href="{{ route('commerce.products.boards.show', $board) }}" wire:navigate
-                                                                   class="text-[11px] text-[#166EE1] hover:underline">Kanban öffnen</a>
-                                                                <button wire:click="detachBoard({{ $section->id }}, {{ $board->id }})"
-                                                                        wire:confirm="Board '{{ $board->name }}' von Sektion '{{ $section->name }}' trennen?"
-                                                                        class="p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
-                                                                    @svg('heroicon-o-x-mark', 'w-4 h-4')
-                                                                </button>
+                                                                   class="text-[#166EE1] hover:underline">Kanban öffnen</a>
                                                             </div>
-                                                        </div>
+                                                        @endif
 
                                                         {{-- Slots & Products --}}
-                                                        <div class="p-3 space-y-3">
+                                                        <div @class([
+                                                            'p-3 space-y-3' => $boardCount > 1,
+                                                            'space-y-3' => $boardCount === 1,
+                                                        ])>
                                                             @forelse($board->productBoardSlots as $slot)
                                                                 <div>
                                                                     <div class="flex items-center gap-2 mb-1.5">
@@ -333,31 +357,39 @@
                                             </div>
                                         @endif
 
-                                        {{-- Attach Board --}}
+                                        {{-- Boards verwalten (klappbar) --}}
                                         @php
                                             $attachedIds = $section->productBoards->pluck('id')->toArray();
                                             $unattached = collect($availableBoards)->filter(fn($b) => !in_array($b->id, $attachedIds));
                                         @endphp
-                                        @if($unattached->count() > 0)
-                                            <div class="flex items-center gap-2">
-                                                <select id="attach-board-{{ $section->id }}"
-                                                        class="flex-1 px-3 py-1.5 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
-                                                    <option value="">Board auswählen...</option>
-                                                    @foreach($unattached as $board)
-                                                        <option value="{{ $board->id }}">{{ $board->name }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <button
-                                                    x-on:click="
-                                                        const sel = document.getElementById('attach-board-{{ $section->id }}');
-                                                        if (sel.value) {
-                                                            $wire.attachBoard({{ $section->id }}, parseInt(sel.value));
-                                                            sel.value = '';
-                                                        }
-                                                    "
-                                                    class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
-                                                    @svg('heroicon-o-plus', 'w-4 h-4')
+                                        @if($unattached->count() > 0 || $boardCount === 0)
+                                            <div x-data="{ boardManageOpen: {{ $boardCount === 0 ? 'true' : 'false' }} }" class="mt-3 pt-3 border-t border-dashed border-gray-200">
+                                                <button x-on:click="boardManageOpen = !boardManageOpen"
+                                                        class="flex items-center gap-1.5 text-[11px] text-gray-500 hover:text-gray-700 transition-colors">
+                                                    @svg('heroicon-o-rectangle-stack', 'w-3.5 h-3.5')
+                                                    <span x-text="boardManageOpen ? 'Boards verwalten schließen' : 'Weiteres Board anhängen'"></span>
                                                 </button>
+                                                <div x-show="boardManageOpen" x-cloak class="mt-2 flex items-center gap-2">
+                                                    <select id="attach-board-{{ $section->id }}"
+                                                            class="flex-1 px-3 py-1.5 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                                        <option value="">Board auswählen…</option>
+                                                        @foreach($unattached as $board)
+                                                            <option value="{{ $board->id }}">{{ $board->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    <button
+                                                        x-on:click="
+                                                            const sel = document.getElementById('attach-board-{{ $section->id }}');
+                                                            if (sel.value) {
+                                                                $wire.attachBoard({{ $section->id }}, parseInt(sel.value));
+                                                                sel.value = '';
+                                                            }
+                                                        "
+                                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
+                                                        @svg('heroicon-o-plus', 'w-4 h-4')
+                                                        <span>Anhängen</span>
+                                                    </button>
+                                                </div>
                                             </div>
                                         @endif
                                     </div>
