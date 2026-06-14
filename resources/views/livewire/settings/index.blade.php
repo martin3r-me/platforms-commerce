@@ -56,6 +56,13 @@
                                 Steuer Matrix
                             </span>
                         </button>
+                        <button x-on:click="$dispatch('scroll-to', { section: 'units' })"
+                                class="w-full text-left px-3 py-2 rounded-md text-[13px] font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+                            <span class="flex items-center gap-2">
+                                @svg('heroicon-o-scale', 'w-4 h-4 text-gray-400')
+                                Einheiten
+                            </span>
+                        </button>
                     </div>
                 </div>
 
@@ -537,6 +544,214 @@
                 </div>
             </section>
         </section>
+
+        {{-- EINHEITEN --}}
+        <section id="units" class="scroll-mt-4">
+            <section class="bg-white rounded-lg border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-900">Einheiten</h3>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-[13px] text-blue-800">
+                        <p class="font-medium text-blue-900 mb-2">Wozu Einheiten?</p>
+                        <p class="mb-2">Einheiten beantworten die Frage: <strong class="text-blue-900">In welcher Bezugsgröße wird abgerechnet?</strong></p>
+                        <p class="mb-2">Beispiele: <em>Stunde (h)</em>, <em>Tag (d)</em>, <em>Stück (Stk)</em>, <em>Pauschale (pau)</em>. Über Umrechnungen können Einheiten ineinander konvertiert werden — z.B. 1 Tag = 8 Stunden.</p>
+                        <p class="text-[11px]"><strong class="text-blue-900">Verwendung:</strong> Jeder Artikel kann eine Basis-Einheit haben (<code>base_price_unit</code>) — die Einheit, auf die sich der Preis bezieht.</p>
+                    </div>
+
+                    {{-- Neue Einheit anlegen --}}
+                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <h4 class="text-[11px] font-medium text-gray-500 uppercase tracking-wide mb-3">Neue Einheit</h4>
+                        <div class="grid grid-cols-12 gap-3">
+                            <div class="col-span-4">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Name</label>
+                                <input type="text" wire:model="unit_name" placeholder="z.B. Stunde"
+                                       class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                @error('unit_name') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Symbol</label>
+                                <input type="text" wire:model="unit_symbol" placeholder="h"
+                                       class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                @error('unit_symbol') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Typ</label>
+                                <select wire:model="unit_type"
+                                        class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                    <option value="piece">Stück</option>
+                                    <option value="time">Zeit</option>
+                                    <option value="weight">Gewicht</option>
+                                    <option value="volume">Volumen</option>
+                                    <option value="length">Länge</option>
+                                    <option value="area">Fläche</option>
+                                    <option value="custom">Sonstig</option>
+                                </select>
+                                @error('unit_type') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="col-span-2 flex items-end">
+                                <button wire:click="saveUnit"
+                                        class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
+                                    @svg('heroicon-o-plus', 'w-4 h-4')
+                                    Anlegen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Liste --}}
+                    <div>
+                        <h4 class="text-[13px] font-medium text-gray-900 mb-3">Bestehende Einheiten</h4>
+                        @if($units->count() > 0)
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200 bg-gray-50">
+                                        <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Name</th>
+                                        <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Symbol</th>
+                                        <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Typ</th>
+                                        <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($units as $unit)
+                                        <tr class="border-b border-gray-100" wire:key="unit-{{ $unit->id }}">
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-900 font-medium">{{ $unit->name }}</td>
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-700"><code class="px-1.5 py-0.5 rounded bg-gray-100">{{ $unit->symbol }}</code></td>
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-500">{{ $unit->type }}</td>
+                                            <td class="py-2.5 px-3 text-right">
+                                                <button wire:click="editUnit({{ $unit->id }})"
+                                                        class="text-[11px] text-[#166EE1] hover:underline mr-3">Bearbeiten</button>
+                                                <button wire:click="deleteUnit({{ $unit->id }})"
+                                                        wire:confirm="Einheit '{{ $unit->name }}' wirklich löschen? Verknüpfte Umrechnungen werden mitgelöscht."
+                                                        class="text-[11px] text-red-600 hover:underline">Löschen</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="py-4 text-[13px] text-gray-500 text-center">Noch keine Einheiten vorhanden.</div>
+                        @endif
+                    </div>
+
+                    {{-- Conversions --}}
+                    <div class="border-t border-gray-200 pt-4">
+                        <h4 class="text-[13px] font-medium text-gray-900 mb-3">Umrechnungen</h4>
+                        <p class="text-[11px] text-gray-500 mb-3">Faktor zwischen zwei Einheiten — z.B. 1 Tag = 8 Stunden (factor=8 von Tag → Stunde).</p>
+
+                        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 mb-3">
+                            <div class="grid grid-cols-12 gap-3">
+                                <div class="col-span-4">
+                                    <label class="block text-[11px] font-medium text-gray-500 mb-1">Von</label>
+                                    <select wire:model="conv_from_unit_id"
+                                            class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                        <option value="">-- wählen --</option>
+                                        @foreach($units as $u)
+                                            <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->symbol }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-span-4">
+                                    <label class="block text-[11px] font-medium text-gray-500 mb-1">Nach</label>
+                                    <select wire:model="conv_to_unit_id"
+                                            class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                        <option value="">-- wählen --</option>
+                                        @foreach($units as $u)
+                                            <option value="{{ $u->id }}">{{ $u->name }} ({{ $u->symbol }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-[11px] font-medium text-gray-500 mb-1">Faktor</label>
+                                    <input type="number" step="0.0001" wire:model="conv_factor" placeholder="8"
+                                           class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                </div>
+                                <div class="col-span-2 flex items-end">
+                                    <button wire:click="saveUnitConversion"
+                                            class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
+                                        @svg('heroicon-o-plus', 'w-4 h-4')
+                                        Anlegen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($unitConversions->count() > 0)
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200 bg-gray-50">
+                                        <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Von</th>
+                                        <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Nach</th>
+                                        <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Faktor</th>
+                                        <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($unitConversions as $conv)
+                                        <tr class="border-b border-gray-100" wire:key="conv-{{ $conv->id }}">
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-900">{{ $conv->fromUnit?->name }} <span class="text-gray-400">({{ $conv->fromUnit?->symbol }})</span></td>
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-900">{{ $conv->toUnit?->name }} <span class="text-gray-400">({{ $conv->toUnit?->symbol }})</span></td>
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-700 text-right">{{ rtrim(rtrim(number_format((float) $conv->factor, 4, ',', '.'), '0'), ',') }}</td>
+                                            <td class="py-2.5 px-3 text-right">
+                                                <button wire:click="deleteUnitConversion({{ $conv->id }})"
+                                                        wire:confirm="Umrechnung wirklich löschen?"
+                                                        class="text-[11px] text-red-600 hover:underline">Löschen</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="py-4 text-[13px] text-gray-500 text-center">Noch keine Umrechnungen vorhanden.</div>
+                        @endif
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        {{-- Edit Unit Modal --}}
+        <div x-data="{ editUnitOpen: false }"
+             x-on:open-edit-unit-modal.window="editUnitOpen = true"
+             x-show="editUnitOpen" x-cloak x-on:keydown.escape.window="editUnitOpen = false">
+            <x-ui-modal size="md">
+                <x-slot name="header">Einheit bearbeiten</x-slot>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-500 mb-1">Name</label>
+                        <input type="text" wire:model="editUnitName" required
+                               class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                        @error('editUnitName') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-500 mb-1">Symbol</label>
+                        <input type="text" wire:model="editUnitSymbol" required
+                               class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                        @error('editUnitSymbol') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-500 mb-1">Typ</label>
+                        <select wire:model="editUnitType" required
+                                class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                            <option value="piece">Stück</option>
+                            <option value="time">Zeit</option>
+                            <option value="weight">Gewicht</option>
+                            <option value="volume">Volumen</option>
+                            <option value="length">Länge</option>
+                            <option value="area">Fläche</option>
+                            <option value="custom">Sonstig</option>
+                        </select>
+                    </div>
+                </div>
+                <x-slot name="footer">
+                    <div class="flex justify-end gap-2">
+                        <button type="button" x-on:click="editUnitOpen = false"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-700 text-[13px] font-medium hover:bg-gray-50 transition-colors">Abbrechen</button>
+                        <button type="button" wire:click="updateUnit" x-on:click="editUnitOpen = false"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">Speichern</button>
+                    </div>
+                </x-slot>
+            </x-ui-modal>
+        </div>
 
         {{-- MODALS --}}
 

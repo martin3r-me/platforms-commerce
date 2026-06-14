@@ -9,6 +9,8 @@ use Platform\Commerce\Models\CommerceSalesContext;
 use Platform\Commerce\Models\CommerceTaxRule;
 use Platform\Commerce\Models\CommerceArticleType;
 use Platform\Commerce\Models\CommerceArticleCategory;
+use Platform\Commerce\Models\CommerceUnit;
+use Platform\Commerce\Models\CommerceUnitConversion;
 use Platform\Commerce\Services\TaxRuleManager;
 
 class Index extends Component
@@ -51,6 +53,21 @@ class Index extends Component
     public $editCatDescription;
     public $editCatColor;
     public $editCatParentId;
+
+    // Unit fields
+    public $unit_name;
+    public $unit_symbol;
+    public $unit_type = 'piece';
+
+    public $editUnitId;
+    public $editUnitName;
+    public $editUnitSymbol;
+    public $editUnitType;
+
+    // Unit Conversion fields
+    public $conv_from_unit_id;
+    public $conv_to_unit_id;
+    public $conv_factor;
 
     // Data
     public $matrix = [];
@@ -387,6 +404,119 @@ class Index extends Component
         }
     }
 
+    // ── Unit CRUD ──
+
+    protected function getTeamUnits()
+    {
+        return CommerceUnit::where('team_id', Auth::user()->currentTeam->id)
+            ->orderBy('type')
+            ->orderBy('name')
+            ->get();
+    }
+
+    protected function getTeamUnitConversions()
+    {
+        return CommerceUnitConversion::where('team_id', Auth::user()->currentTeam->id)
+            ->with(['fromUnit', 'toUnit'])
+            ->get();
+    }
+
+    public function saveUnit()
+    {
+        $this->validate([
+            'unit_name' => 'required|string|max:255',
+            'unit_symbol' => 'required|string|max:20',
+            'unit_type' => 'required|string|in:time,piece,weight,volume,length,area,custom',
+        ]);
+
+        CommerceUnit::create([
+            'name' => $this->unit_name,
+            'symbol' => $this->unit_symbol,
+            'type' => $this->unit_type,
+            'user_id' => Auth::user()->id,
+            'team_id' => Auth::user()->currentTeam->id,
+        ]);
+
+        $this->reset(['unit_name', 'unit_symbol']);
+        $this->unit_type = 'piece';
+        $this->dispatch('notify', type: 'success', message: 'Einheit wurde angelegt.');
+    }
+
+    public function editUnit($id)
+    {
+        $unit = CommerceUnit::find($id);
+        if ($unit) {
+            $this->editUnitId = $unit->id;
+            $this->editUnitName = $unit->name;
+            $this->editUnitSymbol = $unit->symbol;
+            $this->editUnitType = $unit->type;
+            $this->dispatch('open-edit-unit-modal');
+        }
+    }
+
+    public function updateUnit()
+    {
+        $this->validate([
+            'editUnitName' => 'required|string|max:255',
+            'editUnitSymbol' => 'required|string|max:20',
+            'editUnitType' => 'required|string|in:time,piece,weight,volume,length,area,custom',
+        ]);
+
+        $unit = CommerceUnit::find($this->editUnitId);
+        if ($unit) {
+            $unit->update([
+                'name' => $this->editUnitName,
+                'symbol' => $this->editUnitSymbol,
+                'type' => $this->editUnitType,
+            ]);
+            $this->dispatch('notify', type: 'success', message: 'Einheit wurde aktualisiert.');
+        }
+
+        $this->reset(['editUnitId', 'editUnitName', 'editUnitSymbol', 'editUnitType']);
+    }
+
+    public function deleteUnit($id)
+    {
+        $unit = CommerceUnit::find($id);
+        if ($unit) {
+            CommerceUnitConversion::where('from_unit_id', $id)
+                ->orWhere('to_unit_id', $id)
+                ->delete();
+            $unit->delete();
+            $this->dispatch('notify', type: 'success', message: 'Einheit wurde gelöscht.');
+        }
+    }
+
+    // ── Unit Conversion CRUD ──
+
+    public function saveUnitConversion()
+    {
+        $this->validate([
+            'conv_from_unit_id' => 'required|integer|exists:commerce_units,id',
+            'conv_to_unit_id'   => 'required|integer|exists:commerce_units,id|different:conv_from_unit_id',
+            'conv_factor'       => 'required|numeric|gt:0',
+        ]);
+
+        CommerceUnitConversion::create([
+            'from_unit_id' => (int) $this->conv_from_unit_id,
+            'to_unit_id'   => (int) $this->conv_to_unit_id,
+            'factor'       => $this->conv_factor,
+            'team_id'      => Auth::user()->currentTeam->id,
+        ]);
+
+        $this->reset(['conv_from_unit_id', 'conv_to_unit_id', 'conv_factor']);
+        $this->dispatch('notify', type: 'success', message: 'Einheiten-Umrechnung wurde angelegt.');
+    }
+
+    public function deleteUnitConversion($id)
+    {
+        $conversion = CommerceUnitConversion::find($id);
+        if ($conversion) {
+            $conversion->delete();
+            $this->dispatch('notify', type: 'success', message: 'Einheiten-Umrechnung wurde gelöscht.');
+        }
+    }
+
     public function render()
     {
         return view('commerce::livewire.settings.index', [
@@ -395,6 +525,8 @@ class Index extends Component
             'articleTypes' => $this->getTeamArticleTypes(),
             'articleCategories' => $this->getTeamArticleCategories(),
             'allArticleCategories' => $this->getAllArticleCategories(),
+            'units' => $this->getTeamUnits(),
+            'unitConversions' => $this->getTeamUnitConversions(),
         ])->layout('platform::layouts.app');
     }
 }
