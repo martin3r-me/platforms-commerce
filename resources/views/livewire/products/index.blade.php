@@ -65,7 +65,7 @@
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Artikel</th>
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Board</th>
                                 <th class="text-center text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Slots</th>
-                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Preisabw.</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Verkaufspreis</th>
                                 <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Erstellt</th>
                             </tr>
                         </thead>
@@ -110,8 +110,14 @@
                                         {{ $product->productSlots->count() }}
                                     </td>
                                     <td class="py-2.5 px-4 text-right text-[13px] text-gray-700">
-                                        @if($product->price_deviation_value)
-                                            {{ number_format($product->price_deviation_value, 2, ',', '.') }}{{ $product->price_deviation_type === 'relative' ? '%' : '€' }}
+                                        @if($product->selling_price !== null)
+                                            <div class="font-medium">{{ number_format($product->selling_price, 2, ',', '.') }}&nbsp;€</div>
+                                            @if((float) $product->price_deviation_value !== 0.0)
+                                                <div class="text-[10px] text-gray-400">
+                                                    Basis {{ number_format($product->article->price, 2, ',', '.') }}&nbsp;€
+                                                    {{ $product->price_deviation_value > 0 ? '+' : '' }}{{ number_format($product->price_deviation_value, 2, ',', '.') }}{{ $product->price_deviation_type === 'relative' ? '%' : '&nbsp;€' }}
+                                                </div>
+                                            @endif
                                         @else
                                             <span class="text-gray-300">&mdash;</span>
                                         @endif

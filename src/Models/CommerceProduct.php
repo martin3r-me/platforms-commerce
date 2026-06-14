@@ -62,6 +62,27 @@ class CommerceProduct extends Model
         return $this->belongsTo(CommerceArticle::class, 'commerce_article_id');
     }
 
+    /**
+     * Effektiver Verkaufspreis = Article-Preis ± Deviation.
+     * Null, wenn kein Article verknüpft ist.
+     */
+    public function getSellingPriceAttribute(): ?float
+    {
+        $base = $this->article?->price;
+        if ($base === null) {
+            return null;
+        }
+
+        $deviation = (float) ($this->price_deviation_value ?? 0);
+        if ($deviation === 0.0) {
+            return (float) $base;
+        }
+
+        return $this->price_deviation_type === 'relative'
+            ? (float) $base * (1 + $deviation / 100)
+            : (float) $base + $deviation;
+    }
+
     public function slot()
     {
         return $this->belongsTo(CommerceProductBoardSlot::class, 'commerce_product_board_slot_id');
