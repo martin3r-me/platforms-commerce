@@ -33,6 +33,8 @@
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Kategorie</th>
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">SKU</th>
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Typ</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Preis</th>
+                                <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Einheit</th>
                                 <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Erstellt</th>
                             </tr>
                         </thead>
@@ -66,6 +68,23 @@
                                             </span>
                                         @else
                                             <span class="text-[13px] text-gray-300">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right text-[13px] text-gray-900 font-medium">
+                                        @if($article->price !== null)
+                                            {{ number_format((float) $article->price, 2, ',', '.') }}&nbsp;€
+                                        @else
+                                            <span class="text-gray-300">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4 text-[13px] text-gray-700">
+                                        @if($article->base_price_unit)
+                                            <code class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">{{ $article->base_price_unit }}</code>
+                                            @if($article->base_price_quantity && (float) $article->base_price_quantity !== 1.0)
+                                                <span class="text-[11px] text-gray-400 ml-1">×&nbsp;{{ rtrim(rtrim(number_format((float) $article->base_price_quantity, 2, ',', '.'), '0'), ',') }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-gray-300">&mdash;</span>
                                         @endif
                                     </td>
                                     <td class="py-2.5 px-4 text-right text-[11px] text-gray-400">{{ $article->created_at->format('d.m.Y') }}</td>
