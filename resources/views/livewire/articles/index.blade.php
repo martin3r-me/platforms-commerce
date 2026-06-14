@@ -35,6 +35,8 @@
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Typ</th>
                                 <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Preis</th>
                                 <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Einheit</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">EK intern</th>
+                                <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Marge</th>
                                 <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-4">Erstellt</th>
                             </tr>
                         </thead>
@@ -82,6 +84,32 @@
                                             <code class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-700">{{ $article->base_price_unit }}</code>
                                             @if($article->base_price_quantity && (float) $article->base_price_quantity !== 1.0)
                                                 <span class="text-[11px] text-gray-400 ml-1">×&nbsp;{{ rtrim(rtrim(number_format((float) $article->base_price_quantity, 2, ',', '.'), '0'), ',') }}</span>
+                                            @endif
+                                        @else
+                                            <span class="text-gray-300">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right text-[13px] text-gray-700">
+                                        @if($article->internal_cost !== null)
+                                            {{ number_format($article->internal_cost, 2, ',', '.') }}&nbsp;€
+                                            @if($article->costStandard)
+                                                <div class="text-[10px] text-gray-400">{{ $article->costStandard->name }} · {{ rtrim(rtrim(number_format((float) ($article->cost_quantity ?? 1), 2, ',', '.'), '0'), ',') }}{{ $article->cost_unit ?? 'h' }}</div>
+                                            @endif
+                                        @else
+                                            <span class="text-gray-300">&mdash;</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-2.5 px-4 text-right text-[13px]">
+                                        @if($article->internal_margin !== null)
+                                            @php
+                                                $marginColor = $article->internal_margin >= 0 ? 'text-green-700' : 'text-red-600';
+                                                $marginPct = ($article->price && (float) $article->price > 0)
+                                                    ? round(($article->internal_margin / (float) $article->price) * 100)
+                                                    : null;
+                                            @endphp
+                                            <span class="font-medium {{ $marginColor }}">{{ number_format($article->internal_margin, 2, ',', '.') }}&nbsp;€</span>
+                                            @if($marginPct !== null)
+                                                <div class="text-[10px] text-gray-400">{{ $marginPct }}&nbsp;%</div>
                                             @endif
                                         @else
                                             <span class="text-gray-300">&mdash;</span>

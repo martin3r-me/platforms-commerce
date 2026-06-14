@@ -63,6 +63,13 @@
                                 Einheiten
                             </span>
                         </button>
+                        <button x-on:click="$dispatch('scroll-to', { section: 'coststandards' })"
+                                class="w-full text-left px-3 py-2 rounded-md text-[13px] font-medium text-gray-700 hover:bg-gray-100 transition-colors">
+                            <span class="flex items-center gap-2">
+                                @svg('heroicon-o-banknotes', 'w-4 h-4 text-gray-400')
+                                Kostensätze
+                            </span>
+                        </button>
                     </div>
                 </div>
 
@@ -708,6 +715,167 @@
                 </div>
             </section>
         </section>
+
+        {{-- KOSTENSÄTZE --}}
+        <section id="coststandards" class="scroll-mt-4">
+            <section class="bg-white rounded-lg border border-gray-200">
+                <div class="px-4 py-3 border-b border-gray-200">
+                    <h3 class="text-sm font-semibold text-gray-900">Kostensätze (interne Personalkosten)</h3>
+                </div>
+                <div class="p-4 space-y-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-[13px] text-blue-800">
+                        <p class="font-medium text-blue-900 mb-2">Wozu Kostensätze?</p>
+                        <p class="mb-2">Ein Kostensatz beschreibt die <strong class="text-blue-900">internen Personalkosten pro Skill-Level</strong> — z.B. „Senior" mit 95 €/h. An jedem Artikel kann ein Kostensatz hinterlegt werden; daraus wird der interne EK automatisch berechnet (<code>cost_per_hour × cost_quantity</code>).</p>
+                        <p class="text-[11px]"><strong class="text-blue-900">Vorteil:</strong> ändert sich der Senior-Satz von 95 auf 100 €/h, passen sich <em>alle</em> Artikel mit „Senior"-Bezug automatisch an. Keine Massen-Updates nötig.</p>
+                    </div>
+
+                    {{-- Neuer Kostensatz --}}
+                    <div class="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                        <h4 class="text-[11px] font-medium text-gray-500 uppercase tracking-wide mb-3">Neuer Kostensatz</h4>
+                        <div class="grid grid-cols-12 gap-3">
+                            <div class="col-span-4">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Name</label>
+                                <input type="text" wire:model="cs_name" placeholder="z.B. Senior"
+                                       class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                                @error('cs_name') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">€/h</label>
+                                <input type="number" step="0.01" wire:model="cs_cost_per_hour" placeholder="95.00"
+                                       class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">€/d</label>
+                                <input type="number" step="0.01" wire:model="cs_cost_per_day" placeholder="auto (× 8)"
+                                       class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-[11px] font-medium text-gray-500 mb-1">Farbe</label>
+                                <input type="color" wire:model="cs_color"
+                                       class="h-10 w-full rounded-md cursor-pointer border border-gray-300">
+                            </div>
+                            <div class="col-span-2 flex items-end">
+                                <button wire:click="saveCostStandard"
+                                        class="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">
+                                    @svg('heroicon-o-plus', 'w-4 h-4')
+                                    Anlegen
+                                </button>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-gray-500 mt-2">Wenn nur <strong>€/h</strong> gefüllt ist, wird <strong>€/d</strong> automatisch als 8 × €/h gesetzt.</p>
+                    </div>
+
+                    {{-- Liste --}}
+                    <div>
+                        <h4 class="text-[13px] font-medium text-gray-900 mb-3">Bestehende Kostensätze</h4>
+                        @if($costStandards->count() > 0)
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-gray-200 bg-gray-50">
+                                        <th class="text-left text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Name</th>
+                                        <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">€/h</th>
+                                        <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">€/d</th>
+                                        <th class="text-center text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Aktiv</th>
+                                        <th class="text-right text-[11px] font-medium text-gray-400 uppercase tracking-wide py-2 px-3">Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($costStandards as $cs)
+                                        <tr class="border-b border-gray-100" wire:key="cs-{{ $cs->id }}">
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-900">
+                                                <div class="flex items-center gap-2">
+                                                    @if($cs->color)
+                                                        <span class="w-3 h-3 rounded-full border border-gray-200" style="background-color: {{ $cs->color }}"></span>
+                                                    @endif
+                                                    <span class="font-medium">{{ $cs->name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-700 text-right">
+                                                @if($cs->cost_per_hour !== null)
+                                                    {{ number_format((float) $cs->cost_per_hour, 2, ',', '.') }}&nbsp;€
+                                                @else
+                                                    <span class="text-gray-300">&mdash;</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-2.5 px-3 text-[13px] text-gray-700 text-right">
+                                                @if($cs->cost_per_day !== null)
+                                                    {{ number_format((float) $cs->cost_per_day, 2, ',', '.') }}&nbsp;€
+                                                @else
+                                                    <span class="text-gray-300">&mdash;</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-2.5 px-3 text-center">
+                                                @if($cs->is_active)
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[11px] font-medium bg-green-100 text-green-700">aktiv</span>
+                                                @else
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[11px] font-medium bg-gray-100 text-gray-500">inaktiv</span>
+                                                @endif
+                                            </td>
+                                            <td class="py-2.5 px-3 text-right">
+                                                <button wire:click="editCostStandard({{ $cs->id }})"
+                                                        class="text-[11px] text-[#166EE1] hover:underline mr-3">Bearbeiten</button>
+                                                <button wire:click="deleteCostStandard({{ $cs->id }})"
+                                                        wire:confirm="Kostensatz '{{ $cs->name }}' wirklich löschen? Artikel-Referenzen werden auf null gesetzt."
+                                                        class="text-[11px] text-red-600 hover:underline">Löschen</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="py-4 text-[13px] text-gray-500 text-center">Noch keine Kostensätze vorhanden.</div>
+                        @endif
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        {{-- Edit Cost Standard Modal --}}
+        <div x-data="{ editCsOpen: false }"
+             x-on:open-edit-cost-standard-modal.window="editCsOpen = true"
+             x-show="editCsOpen" x-cloak x-on:keydown.escape.window="editCsOpen = false">
+            <x-ui-modal size="md">
+                <x-slot name="header">Kostensatz bearbeiten</x-slot>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-500 mb-1">Name</label>
+                        <input type="text" wire:model="editCsName" required
+                               class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                        @error('editCsName') <p class="mt-1 text-[11px] text-red-600">{{ $message }}</p> @enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-500 mb-1">€/h</label>
+                            <input type="number" step="0.01" wire:model="editCsCostPerHour"
+                                   class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-500 mb-1">€/d</label>
+                            <input type="number" step="0.01" wire:model="editCsCostPerDay"
+                                   class="w-full px-3 py-2 text-[13px] rounded-md border border-gray-300 bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#166EE1]/20 focus:border-[#166EE1]">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-gray-500 mb-1">Farbe</label>
+                        <input type="color" wire:model="editCsColor"
+                               class="h-10 w-full rounded-md cursor-pointer border border-gray-300">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" wire:model="editCsActive" id="editCsActive"
+                               class="rounded border-gray-300 text-[#166EE1] focus:ring-[#166EE1]">
+                        <label for="editCsActive" class="text-[13px] text-gray-700">Aktiv</label>
+                    </div>
+                </div>
+                <x-slot name="footer">
+                    <div class="flex justify-end gap-2">
+                        <button type="button" x-on:click="editCsOpen = false"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-gray-300 bg-white text-gray-700 text-[13px] font-medium hover:bg-gray-50 transition-colors">Abbrechen</button>
+                        <button type="button" wire:click="updateCostStandard" x-on:click="editCsOpen = false"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#166EE1] text-white text-[13px] font-medium hover:bg-blue-700 transition-colors">Speichern</button>
+                    </div>
+                </x-slot>
+            </x-ui-modal>
+        </div>
 
         {{-- Edit Unit Modal --}}
         <div x-data="{ editUnitOpen: false }"

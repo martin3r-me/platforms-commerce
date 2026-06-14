@@ -348,6 +348,12 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\UpdateArticleSupplierTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteArticleSupplierTool());
 
+            // Cost Standards (interne Personalkostensätze pro Skill-Level)
+            $registry->register(new \Platform\Commerce\Tools\ListCostStandardsTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateCostStandardTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateCostStandardTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteCostStandardTool());
+
             // Tax Categories
             $registry->register(new \Platform\Commerce\Tools\ListTaxCategoriesTool());
             $registry->register(new \Platform\Commerce\Tools\CreateTaxCategoryTool());

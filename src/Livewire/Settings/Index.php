@@ -11,6 +11,7 @@ use Platform\Commerce\Models\CommerceArticleType;
 use Platform\Commerce\Models\CommerceArticleCategory;
 use Platform\Commerce\Models\CommerceUnit;
 use Platform\Commerce\Models\CommerceUnitConversion;
+use Platform\Commerce\Models\CommerceCostStandard;
 use Platform\Commerce\Services\TaxRuleManager;
 
 class Index extends Component
@@ -68,6 +69,19 @@ class Index extends Component
     public $conv_from_unit_id;
     public $conv_to_unit_id;
     public $conv_factor;
+
+    // Cost Standard fields
+    public $cs_name;
+    public $cs_cost_per_hour;
+    public $cs_cost_per_day;
+    public $cs_color;
+
+    public $editCsId;
+    public $editCsName;
+    public $editCsCostPerHour;
+    public $editCsCostPerDay;
+    public $editCsColor;
+    public $editCsActive = true;
 
     // Data
     public $matrix = [];
@@ -517,6 +531,87 @@ class Index extends Component
         }
     }
 
+    // ── Cost Standard CRUD ──
+
+    protected function getTeamCostStandards()
+    {
+        return CommerceCostStandard::where('team_id', Auth::user()->currentTeam->id)
+            ->orderBy('sort_order')->orderBy('name')->get();
+    }
+
+    public function saveCostStandard()
+    {
+        $this->validate([
+            'cs_name' => 'required|string|max:255',
+            'cs_cost_per_hour' => 'nullable|numeric|min:0',
+            'cs_cost_per_day' => 'nullable|numeric|min:0',
+            'cs_color' => 'nullable|string|max:20',
+        ]);
+
+        CommerceCostStandard::create([
+            'name' => $this->cs_name,
+            'cost_per_hour' => $this->cs_cost_per_hour,
+            'cost_per_day' => $this->cs_cost_per_day ?: (($this->cs_cost_per_hour) ? (float) $this->cs_cost_per_hour * 8 : null),
+            'color' => $this->cs_color,
+            'is_active' => true,
+            'valid_from' => now(),
+            'user_id' => Auth::user()->id,
+            'team_id' => Auth::user()->currentTeam->id,
+        ]);
+
+        $this->reset(['cs_name', 'cs_cost_per_hour', 'cs_cost_per_day', 'cs_color']);
+        $this->dispatch('notify', type: 'success', message: 'Kostensatz wurde angelegt.');
+    }
+
+    public function editCostStandard($id)
+    {
+        $cs = CommerceCostStandard::find($id);
+        if ($cs) {
+            $this->editCsId = $cs->id;
+            $this->editCsName = $cs->name;
+            $this->editCsCostPerHour = $cs->cost_per_hour;
+            $this->editCsCostPerDay = $cs->cost_per_day;
+            $this->editCsColor = $cs->color;
+            $this->editCsActive = (bool) $cs->is_active;
+            $this->dispatch('open-edit-cost-standard-modal');
+        }
+    }
+
+    public function updateCostStandard()
+    {
+        $this->validate([
+            'editCsName' => 'required|string|max:255',
+            'editCsCostPerHour' => 'nullable|numeric|min:0',
+            'editCsCostPerDay' => 'nullable|numeric|min:0',
+        ]);
+
+        $cs = CommerceCostStandard::find($this->editCsId);
+        if ($cs) {
+            $cs->update([
+                'name' => $this->editCsName,
+                'cost_per_hour' => $this->editCsCostPerHour,
+                'cost_per_day' => $this->editCsCostPerDay,
+                'color' => $this->editCsColor,
+                'is_active' => (bool) $this->editCsActive,
+            ]);
+            $this->dispatch('notify', type: 'success', message: 'Kostensatz wurde aktualisiert.');
+        }
+
+        $this->reset(['editCsId', 'editCsName', 'editCsCostPerHour', 'editCsCostPerDay', 'editCsColor']);
+        $this->editCsActive = true;
+    }
+
+    public function deleteCostStandard($id)
+    {
+        $cs = CommerceCostStandard::find($id);
+        if ($cs) {
+            \Platform\Commerce\Models\CommerceArticle::where('cost_standard_id', $id)
+                ->update(['cost_standard_id' => null]);
+            $cs->delete();
+            $this->dispatch('notify', type: 'success', message: 'Kostensatz wurde gelöscht.');
+        }
+    }
+
     public function render()
     {
         return view('commerce::livewire.settings.index', [
@@ -527,6 +622,7 @@ class Index extends Component
             'allArticleCategories' => $this->getAllArticleCategories(),
             'units' => $this->getTeamUnits(),
             'unitConversions' => $this->getTeamUnitConversions(),
+            'costStandards' => $this->getTeamCostStandards(),
         ])->layout('platform::layouts.app');
     }
 }

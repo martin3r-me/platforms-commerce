@@ -51,6 +51,9 @@ class CommerceArticle extends Model
         'recyclable',
         'category_id',
         'commerce_tax_category_id',
+        'cost_standard_id',
+        'cost_quantity',
+        'cost_unit',
         'commerce_article_type_id',
         'commerce_sales_unit_id',
         'commerce_storage_unit_id',
@@ -152,6 +155,45 @@ class CommerceArticle extends Model
     public function articleType()
     {
         return $this->belongsTo(CommerceArticleType::class, 'commerce_article_type_id');
+    }
+
+    public function costStandard()
+    {
+        return $this->belongsTo(CommerceCostStandard::class, 'cost_standard_id');
+    }
+
+    /**
+     * Berechneter interner Einkaufspreis = Kostensatz × Menge.
+     *
+     * Nutzt cost_per_hour wenn cost_unit='h', sonst cost_per_day. Null wenn
+     * kein Kostensatz oder Menge fehlt.
+     */
+    public function getInternalCostAttribute(): ?float
+    {
+        $standard = $this->costStandard;
+        $quantity = $this->cost_quantity !== null ? (float) $this->cost_quantity : null;
+
+        if (!$standard || $quantity === null) {
+            return null;
+        }
+
+        $rate = $this->cost_unit === 'd'
+            ? $standard->cost_per_day
+            : $standard->cost_per_hour;
+
+        return $rate !== null ? (float) $rate * $quantity : null;
+    }
+
+    /**
+     * Marge = Verkaufspreis − interne Kosten. Null wenn interner Kostensatz fehlt.
+     */
+    public function getInternalMarginAttribute(): ?float
+    {
+        $internal = $this->internal_cost;
+        if ($internal === null || $this->price === null) {
+            return null;
+        }
+        return (float) $this->price - $internal;
     }
 
     public function products()
