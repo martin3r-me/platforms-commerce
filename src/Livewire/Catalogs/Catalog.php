@@ -30,7 +30,11 @@ class Catalog extends Component
 
     public function mount(CommerceCatalog $commerceCatalog)
     {
-        $this->catalog = $commerceCatalog->load(['sections.productBoards', 'creator']);
+        $this->catalog = $commerceCatalog->load([
+            'sections.productBoards.productBoardSlots.products.article.costStandard',
+            'sections.productBoards.productBoardSlots.products.article.suppliers',
+            'creator',
+        ]);
 
         $this->availableBoards = CommerceProductBoard::where('team_id', Auth::user()->currentTeam->id)
             ->orderBy('name')
@@ -59,7 +63,7 @@ class Catalog extends Component
 
         $this->reset(['sectionName', 'sectionSortOrder']);
         $this->catalog->refresh();
-        $this->catalog->load(['sections.productBoards']);
+        $this->catalog->load(['sections.productBoards.productBoardSlots.products.article.costStandard', 'sections.productBoards.productBoardSlots.products.article.suppliers']);
     }
 
     public function deleteSection($sectionId)
@@ -71,7 +75,7 @@ class Catalog extends Component
         $section->delete();
 
         $this->catalog->refresh();
-        $this->catalog->load(['sections.productBoards']);
+        $this->catalog->load(['sections.productBoards.productBoardSlots.products.article.costStandard', 'sections.productBoards.productBoardSlots.products.article.suppliers']);
     }
 
     public function attachBoard($sectionId, $boardId)
@@ -83,7 +87,7 @@ class Catalog extends Component
         }
 
         $this->catalog->refresh();
-        $this->catalog->load(['sections.productBoards']);
+        $this->catalog->load(['sections.productBoards.productBoardSlots.products.article.costStandard', 'sections.productBoards.productBoardSlots.products.article.suppliers']);
     }
 
     public function detachBoard($sectionId, $boardId)
@@ -94,7 +98,7 @@ class Catalog extends Component
         }
 
         $this->catalog->refresh();
-        $this->catalog->load(['sections.productBoards']);
+        $this->catalog->load(['sections.productBoards.productBoardSlots.products.article.costStandard', 'sections.productBoards.productBoardSlots.products.article.suppliers']);
     }
 
     public function render()

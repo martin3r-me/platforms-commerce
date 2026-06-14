@@ -205,22 +205,129 @@
                                         </button>
                                     </div>
 
-                                    {{-- Attached Boards --}}
+                                    {{-- Attached Boards mit Slots & Products --}}
                                     <div class="ml-8">
                                         @if($section->productBoards->count() > 0)
-                                            <div class="space-y-2 mb-3">
+                                            <div class="space-y-3 mb-3">
                                                 @foreach($section->productBoards as $board)
-                                                    <div class="flex items-center justify-between p-2 bg-gray-50 rounded text-[13px]">
-                                                        <div class="flex items-center gap-2">
-                                                            @if($board->color)
-                                                                <span class="w-3 h-3 rounded-full" style="background-color: {{ $board->color }}"></span>
-                                                            @endif
-                                                            <span>{{ $board->name }}</span>
+                                                    <div class="rounded-md border border-gray-200 bg-white">
+                                                        {{-- Board header --}}
+                                                        <div class="flex items-center justify-between px-3 py-2 border-b border-gray-100 bg-gray-50 rounded-t-md">
+                                                            <div class="flex items-center gap-2">
+                                                                @if($board->color)
+                                                                    <span class="w-3 h-3 rounded-full" style="background-color: {{ $board->color }}"></span>
+                                                                @endif
+                                                                <span class="text-[13px] font-medium text-gray-900">{{ $board->name }}</span>
+                                                                @if($board->description)
+                                                                    <span class="text-[11px] text-gray-400 truncate max-w-md">— {{ $board->description }}</span>
+                                                                @endif
+                                                            </div>
+                                                            <div class="flex items-center gap-2">
+                                                                <a href="{{ route('commerce.products.boards.show', $board) }}" wire:navigate
+                                                                   class="text-[11px] text-[#166EE1] hover:underline">Kanban öffnen</a>
+                                                                <button wire:click="detachBoard({{ $section->id }}, {{ $board->id }})"
+                                                                        wire:confirm="Board '{{ $board->name }}' von Sektion '{{ $section->name }}' trennen?"
+                                                                        class="p-1 rounded text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                                                                    @svg('heroicon-o-x-mark', 'w-4 h-4')
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <button wire:click="detachBoard({{ $section->id }}, {{ $board->id }})"
-                                                                class="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
-                                                            @svg('heroicon-o-x-mark', 'w-4 h-4')
-                                                        </button>
+
+                                                        {{-- Slots & Products --}}
+                                                        <div class="p-3 space-y-3">
+                                                            @forelse($board->productBoardSlots as $slot)
+                                                                <div>
+                                                                    <div class="flex items-center gap-2 mb-1.5">
+                                                                        @if($slot->color)
+                                                                            <span class="w-2 h-2 rounded-full" style="background-color: {{ $slot->color }}"></span>
+                                                                        @endif
+                                                                        <span class="text-[11px] uppercase tracking-wide text-gray-500 font-medium">{{ $slot->name ?? 'Slot' }}</span>
+                                                                        <span class="text-[11px] text-gray-300">·</span>
+                                                                        <span class="text-[11px] text-gray-400">{{ $slot->products->count() }} Produkt(e)</span>
+                                                                    </div>
+                                                                    @if($slot->products->count() > 0)
+                                                                        <table class="w-full">
+                                                                            <thead>
+                                                                                <tr class="border-b border-gray-100">
+                                                                                    <th class="text-left text-[10px] font-medium text-gray-400 uppercase py-1.5 px-2">Produkt</th>
+                                                                                    <th class="text-left text-[10px] font-medium text-gray-400 uppercase py-1.5 px-2">Artikel</th>
+                                                                                    <th class="text-right text-[10px] font-medium text-gray-400 uppercase py-1.5 px-2">VK</th>
+                                                                                    <th class="text-right text-[10px] font-medium text-gray-400 uppercase py-1.5 px-2">EK</th>
+                                                                                    <th class="text-right text-[10px] font-medium text-gray-400 uppercase py-1.5 px-2">Marge</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach($slot->products as $product)
+                                                                                    @php
+                                                                                        $article = $product->article;
+                                                                                        $unit = $article?->base_price_unit;
+                                                                                        $vk = $product->selling_price;
+                                                                                        $internalEk = $article?->internal_cost;
+                                                                                        $extLink = $article?->suppliers?->first(fn($s) => (bool) ($s->pivot?->is_preferred))
+                                                                                            ?? $article?->suppliers?->first();
+                                                                                        $externalEk = $extLink?->pivot?->purchase_price !== null
+                                                                                            ? (float) $extLink->pivot->purchase_price
+                                                                                            : null;
+                                                                                        $ek = $externalEk ?? $internalEk;
+                                                                                        $ekSource = $externalEk !== null ? ($extLink?->name ?? 'extern') : ($article?->costStandard?->name);
+                                                                                        $margin = ($vk !== null && $ek !== null) ? $vk - $ek : null;
+                                                                                        $marginPct = ($margin !== null && $vk && $vk > 0) ? round(($margin / $vk) * 100) : null;
+                                                                                    @endphp
+                                                                                    <tr class="border-b border-gray-50 hover:bg-blue-50/30 transition-colors">
+                                                                                        <td class="py-1.5 px-2">
+                                                                                            <a href="{{ route('commerce.products.show', $product) }}" wire:navigate
+                                                                                               class="text-[13px] text-gray-900 hover:text-[#166EE1]">{{ $product->name }}</a>
+                                                                                        </td>
+                                                                                        <td class="py-1.5 px-2">
+                                                                                            @if($article)
+                                                                                                <a href="{{ route('commerce.articles.show', $article) }}" wire:navigate
+                                                                                                   class="text-[11px] text-gray-500 hover:text-[#166EE1] font-mono">{{ $article->sku }}</a>
+                                                                                            @else
+                                                                                                <span class="text-[11px] text-gray-300">—</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td class="py-1.5 px-2 text-right text-[13px] text-gray-900 font-medium">
+                                                                                            @if($vk !== null)
+                                                                                                {{ number_format($vk, 2, ',', '.') }}&nbsp;€
+                                                                                                @if($unit)
+                                                                                                    <span class="text-[10px] text-gray-400">/&nbsp;{{ $unit }}</span>
+                                                                                                @endif
+                                                                                            @else
+                                                                                                <span class="text-gray-300">—</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td class="py-1.5 px-2 text-right text-[13px] text-gray-700">
+                                                                                            @if($ek !== null)
+                                                                                                {{ number_format($ek, 2, ',', '.') }}&nbsp;€
+                                                                                                @if($ekSource)
+                                                                                                    <div class="text-[10px] text-gray-400">{{ $ekSource }}</div>
+                                                                                                @endif
+                                                                                            @else
+                                                                                                <span class="text-gray-300">—</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                        <td class="py-1.5 px-2 text-right text-[13px]">
+                                                                                            @if($margin !== null)
+                                                                                                <span class="font-medium {{ $margin >= 0 ? 'text-green-700' : 'text-red-600' }}">{{ number_format($margin, 2, ',', '.') }}&nbsp;€</span>
+                                                                                                @if($marginPct !== null)
+                                                                                                    <div class="text-[10px] text-gray-400">{{ $marginPct }}&nbsp;%</div>
+                                                                                                @endif
+                                                                                            @else
+                                                                                                <span class="text-gray-300">—</span>
+                                                                                            @endif
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                @endforeach
+                                                                            </tbody>
+                                                                        </table>
+                                                                    @else
+                                                                        <p class="text-[11px] text-gray-400 italic px-2">Keine Produkte in diesem Slot.</p>
+                                                                    @endif
+                                                                </div>
+                                                            @empty
+                                                                <p class="text-[11px] text-gray-400 italic">Dieses Board hat noch keine Slots.</p>
+                                                            @endforelse
+                                                        </div>
                                                     </div>
                                                 @endforeach
                                             </div>
