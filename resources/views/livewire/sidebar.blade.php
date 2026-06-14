@@ -50,6 +50,39 @@
         </x-ui-sidebar-item>
     </x-ui-sidebar-list>
 
+    {{-- Abschnitt: Kataloge (Entity-basierte Gruppierung, analog Planner) --}}
+    <div x-show="!collapsed">
+        @if($catalogEntityTypeGroups->isNotEmpty() || $unlinkedCatalogs->isNotEmpty())
+            <div class="mt-2 mb-1 px-3 text-[10px] uppercase tracking-wider text-[var(--ui-muted)] opacity-70">Kataloge</div>
+        @endif
+
+        @foreach($catalogEntityTypeGroups as $typeGroup)
+            <x-ui-sidebar-list wire:key="catalog-type-group-{{ $typeGroup['type_id'] }}" :label="$typeGroup['type_name']">
+                @foreach($typeGroup['entities'] as $entityNode)
+                    @include('commerce::livewire.partials.sidebar-catalog-entity-node', [
+                        'node' => $entityNode,
+                        'typeIcon' => $typeGroup['type_icon'] ?? null,
+                    ])
+                @endforeach
+            </x-ui-sidebar-list>
+        @endforeach
+
+        @if($unlinkedCatalogs->isNotEmpty())
+            <x-ui-sidebar-list label="Unverknüpft">
+                @foreach($unlinkedCatalogs as $catalog)
+                    <a wire:key="unlinked-catalog-{{ $catalog->id }}"
+                       href="{{ route('commerce.catalogs.show', ['commerceCatalog' => $catalog]) }}"
+                       wire:navigate
+                       title="{{ $catalog->name }}"
+                       class="flex items-center gap-1.5 py-0.5 pl-3 pr-2 text-[var(--ui-secondary)] hover:text-[var(--ui-primary)] transition truncate">
+                        <span class="w-1 h-1 rounded-full flex-shrink-0 bg-[var(--ui-muted)] opacity-40"></span>
+                        <span class="truncate text-[11px]">{{ $catalog->name }}</span>
+                    </a>
+                @endforeach
+            </x-ui-sidebar-list>
+        @endif
+    </div>
+
     {{-- Collapsed: Icons-only --}}
     <div x-show="collapsed" class="px-2 py-2 border-b border-[var(--ui-border)]">
         <div class="flex flex-col gap-2">
