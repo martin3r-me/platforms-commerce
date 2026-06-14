@@ -342,6 +342,12 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\UpdateSupplierTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteSupplierTool());
 
+            // Article ↔ Supplier (Pivot with purchase price, validity, preferred)
+            $registry->register(new \Platform\Commerce\Tools\ListArticleSuppliersTool());
+            $registry->register(new \Platform\Commerce\Tools\CreateArticleSupplierTool());
+            $registry->register(new \Platform\Commerce\Tools\UpdateArticleSupplierTool());
+            $registry->register(new \Platform\Commerce\Tools\DeleteArticleSupplierTool());
+
             // Tax Categories
             $registry->register(new \Platform\Commerce\Tools\ListTaxCategoriesTool());
             $registry->register(new \Platform\Commerce\Tools\CreateTaxCategoryTool());

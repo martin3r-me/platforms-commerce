@@ -57,7 +57,16 @@ class CommerceSupplier extends Model
             'commerce_article_supplier',
             'supplier_id',
             'article_id'
-        )->withPivot('external_id', 'last_synced_at')->withTimestamps();
+        )->withPivot([
+            'id',
+            'external_id',
+            'purchase_price',
+            'purchase_currency',
+            'valid_from',
+            'valid_until',
+            'is_preferred',
+            'last_synced_at',
+        ])->withTimestamps();
     }
 
     public function fieldMappings()

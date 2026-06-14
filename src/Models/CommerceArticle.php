@@ -159,6 +159,30 @@ class CommerceArticle extends Model
         return $this->hasMany(CommerceProduct::class, 'commerce_article_id');
     }
 
+    public function suppliers()
+    {
+        return $this->belongsToMany(
+            CommerceSupplier::class,
+            'commerce_article_supplier',
+            'article_id',
+            'supplier_id'
+        )->withPivot([
+            'id',
+            'external_id',
+            'purchase_price',
+            'purchase_currency',
+            'valid_from',
+            'valid_until',
+            'is_preferred',
+            'last_synced_at',
+        ])->withTimestamps();
+    }
+
+    public function articleSuppliers()
+    {
+        return $this->hasMany(CommerceArticleSupplier::class, 'article_id');
+    }
+
     public function creator()
     {
         return $this->belongsTo(\Platform\Core\Models\User::class, 'created_by');
