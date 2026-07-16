@@ -78,6 +78,7 @@ class ListTaxCategoriesTool implements ToolContract, ToolMetadataContract
                 'id' => $category->id,
                 'name' => $category->name,
                 'default_rate' => (float)$category->default_rate,
+                'revenue_account' => $category->revenue_account,
                 'valid_from' => $category->valid_from,
                 'valid_until' => $category->valid_until,
                 'team_id' => $category->team_id,

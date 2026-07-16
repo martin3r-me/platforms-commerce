@@ -16,6 +16,7 @@ class CommerceTaxCategory extends Model
     protected $fillable = [
         'name',
         'default_rate',
+        'revenue_account',
         'valid_from',
         'valid_until',
         'user_id',

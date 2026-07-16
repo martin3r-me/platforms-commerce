@@ -54,6 +54,10 @@ class CreateArticleTool implements ToolContract, ToolMetadataContract
                     'type' => 'integer',
                     'description' => 'Optional: Artikel-Typ ID. Nutze commerce.article_types.GET um verfügbare Typen zu finden.',
                 ],
+                'revenue_account' => [
+                    'type' => 'string',
+                    'description' => 'Optional: Erlöskonto-Override (Fibu-/Sachkonto), z.B. "8400". Nur setzen, wenn der Artikel vom Standard-Erlöskonto seiner Steuerkategorie abweicht. Bleibt leer, greift das Konto der Steuerkategorie.',
+                ],
                 'stock_level' => [
                     'type' => 'integer',
                     'description' => 'Optional: Lagerbestand. Default: 0.',
@@ -140,6 +144,9 @@ class CreateArticleTool implements ToolContract, ToolMetadataContract
                     ? (string)$arguments['description']
                     : null,
                 'commerce_article_type_id' => $articleTypeId,
+                'revenue_account' => (array_key_exists('revenue_account', $arguments) && trim((string)$arguments['revenue_account']) !== '')
+                    ? trim((string)$arguments['revenue_account'])
+                    : null,
                 'stock_level' => (int)($arguments['stock_level'] ?? 0),
                 'is_available' => (bool)($arguments['is_available'] ?? true),
             ]);
@@ -151,6 +158,8 @@ class CreateArticleTool implements ToolContract, ToolMetadataContract
                 'price' => (float)$article->price,
                 'description' => $article->description,
                 'commerce_article_type_id' => $article->commerce_article_type_id,
+                'revenue_account' => $article->revenue_account,
+                'effective_revenue_account' => $article->effective_revenue_account,
                 'stock_level' => (int)$article->stock_level,
                 'is_available' => (bool)$article->is_available,
                 'team_id' => $article->team_id,

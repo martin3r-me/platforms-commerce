@@ -47,6 +47,10 @@ class UpdateTaxCategoryTool implements ToolContract, ToolMetadataContract
                     'type' => 'number',
                     'description' => 'Optional: Neuer Standard-Steuersatz.',
                 ],
+                'revenue_account' => [
+                    'type' => 'string',
+                    'description' => 'Optional: Neues Standard-Erlöskonto (Fibu-/Sachkonto), z.B. "8400". "" zum Leeren.',
+                ],
                 'valid_from' => [
                     'type' => 'string',
                     'description' => 'Optional: Neues Gültig-ab-Datum (YYYY-MM-DD, "" zum Leeren).',
@@ -119,6 +123,11 @@ class UpdateTaxCategoryTool implements ToolContract, ToolMetadataContract
                 $update['default_rate'] = (float)$arguments['default_rate'];
             }
 
+            if (array_key_exists('revenue_account', $arguments)) {
+                $v = trim((string)($arguments['revenue_account'] ?? ''));
+                $update['revenue_account'] = $v === '' ? null : $v;
+            }
+
             if (array_key_exists('valid_from', $arguments)) {
                 $v = (string)($arguments['valid_from'] ?? '');
                 $update['valid_from'] = $v === '' ? null : $v;
@@ -138,6 +147,7 @@ class UpdateTaxCategoryTool implements ToolContract, ToolMetadataContract
                 'id' => $category->id,
                 'name' => $category->name,
                 'default_rate' => (float)$category->default_rate,
+                'revenue_account' => $category->revenue_account,
                 'valid_from' => $category->valid_from,
                 'valid_until' => $category->valid_until,
                 'team_id' => $category->team_id,

@@ -75,6 +75,7 @@ class ListArticlesTool implements ToolContract, ToolMetadataContract
             }
 
             $q = CommerceArticle::query()
+                ->with('taxCategory:id,revenue_account')
                 ->where('team_id', $team->id);
 
             // Filter by article type
@@ -99,6 +100,8 @@ class ListArticlesTool implements ToolContract, ToolMetadataContract
                 'price' => (float)$article->price,
                 'description' => $article->description,
                 'commerce_article_type_id' => $article->commerce_article_type_id,
+                'revenue_account' => $article->revenue_account,
+                'effective_revenue_account' => $article->effective_revenue_account,
                 'stock_level' => (int)$article->stock_level,
                 'is_available' => (bool)$article->is_available,
                 'team_id' => $article->team_id,

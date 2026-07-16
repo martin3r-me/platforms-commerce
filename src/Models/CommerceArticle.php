@@ -51,6 +51,7 @@ class CommerceArticle extends Model
         'recyclable',
         'category_id',
         'commerce_tax_category_id',
+        'revenue_account',
         'cost_standard_id',
         'cost_quantity',
         'cost_unit',
@@ -194,6 +195,26 @@ class CommerceArticle extends Model
             return null;
         }
         return (float) $this->price - $internal;
+    }
+
+    /**
+     * Effektives Erlöskonto (Fibu-/Sachkonto) für die Verbuchung von Umsätzen.
+     *
+     * Vorrang hat das Override am Artikel (revenue_account); ist dort nichts
+     * gepflegt, greift das Standard-Erlöskonto der Steuerkategorie. Null wenn
+     * weder Artikel noch Steuerkategorie ein Konto gesetzt haben.
+     */
+    public function getEffectiveRevenueAccountAttribute(): ?string
+    {
+        $own = $this->revenue_account !== null ? trim((string) $this->revenue_account) : '';
+        if ($own !== '') {
+            return $own;
+        }
+
+        $fromCategory = $this->taxCategory?->revenue_account;
+        $fromCategory = $fromCategory !== null ? trim((string) $fromCategory) : '';
+
+        return $fromCategory !== '' ? $fromCategory : null;
     }
 
     public function products()

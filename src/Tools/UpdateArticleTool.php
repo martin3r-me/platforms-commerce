@@ -60,6 +60,10 @@ class UpdateArticleTool implements ToolContract, ToolMetadataContract
                     'type' => 'integer',
                     'description' => 'Optional: Neue Artikel-Typ ID (null zum Leeren).',
                 ],
+                'revenue_account' => [
+                    'type' => 'string',
+                    'description' => 'Optional: Erlöskonto-Override (Fibu-/Sachkonto), z.B. "8400". "" zum Leeren (dann greift wieder das Konto der Steuerkategorie).',
+                ],
                 'stock_level' => [
                     'type' => 'integer',
                     'description' => 'Optional: Neuer Lagerbestand.',
@@ -175,6 +179,11 @@ class UpdateArticleTool implements ToolContract, ToolMetadataContract
                 }
             }
 
+            if (array_key_exists('revenue_account', $arguments)) {
+                $v = trim((string)($arguments['revenue_account'] ?? ''));
+                $update['revenue_account'] = $v === '' ? null : $v;
+            }
+
             if (array_key_exists('stock_level', $arguments)) {
                 $update['stock_level'] = $arguments['stock_level'] !== null ? (int)$arguments['stock_level'] : 0;
             }
@@ -195,6 +204,8 @@ class UpdateArticleTool implements ToolContract, ToolMetadataContract
                 'price' => (float)$article->price,
                 'description' => $article->description,
                 'commerce_article_type_id' => $article->commerce_article_type_id,
+                'revenue_account' => $article->revenue_account,
+                'effective_revenue_account' => $article->effective_revenue_account,
                 'stock_level' => (int)$article->stock_level,
                 'is_available' => (bool)$article->is_available,
                 'team_id' => $article->team_id,
