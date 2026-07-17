@@ -24,7 +24,13 @@ class ListArticlesTool implements ToolContract, ToolMetadataContract
 
     public function getDescription(): string
     {
-        return 'GET /commerce/articles - Listet Artikel (id, name, sku, price). Nutze dieses Tool um vorhandene Artikel zu finden, bevor du SlotVariants erstellst. Unterstützt filters/search/sort/limit/offset.';
+        return <<<TXT
+        GET /commerce/articles - Listet Artikel. Nutze dieses Tool um vorhandene Artikel zu finden, bevor du SlotVariants erstellst oder Belegpositionen befüllst. Unterstützt filters/search/sort/limit/offset.
+
+        PREISBASIS: `price` ist ein NETTO-Preis in Euro (Float). `vat_percent` ist der USt-Satz aus der Steuer-Kategorie des Artikels (default_rate), z.B. 19.0 oder 7.0 — null, wenn keine Kategorie hinterlegt. `price_basis` ist immer "net".
+
+        → easybill-Belegposition: single_price_net = round(price * 100) (Integer-Cent!), vat_percent = vat_percent. Beispiel: price 10.00 € → single_price_net 1000.
+        TXT;
     }
 
     public function getSchema(): array
@@ -75,7 +81,7 @@ class ListArticlesTool implements ToolContract, ToolMetadataContract
             }
 
             $q = CommerceArticle::query()
-                ->with('taxCategory:id,revenue_account')
+                ->with('taxCategory:id,revenue_account,default_rate')
                 ->where('team_id', $team->id);
 
             // Filter by article type
@@ -93,19 +99,29 @@ class ListArticlesTool implements ToolContract, ToolMetadataContract
             $this->applyStandardSort($q, $arguments, ['name', 'sku', 'price', 'id', 'created_at'], 'name', 'asc');
 
             $result = $this->applyStandardPaginationResult($q, $arguments);
-            $items = $result['data']->map(fn ($article) => [
-                'id' => $article->id,
-                'name' => $article->name,
-                'sku' => $article->sku,
-                'price' => (float)$article->price,
-                'description' => $article->description,
-                'commerce_article_type_id' => $article->commerce_article_type_id,
-                'revenue_account' => $article->revenue_account,
-                'effective_revenue_account' => $article->effective_revenue_account,
-                'stock_level' => (int)$article->stock_level,
-                'is_available' => (bool)$article->is_available,
-                'team_id' => $article->team_id,
-            ])->values()->toArray();
+            $items = $result['data']->map(function ($article) {
+                $vatPercent = $article->taxCategory?->default_rate;
+                $priceNet = $article->price !== null ? (float) $article->price : null;
+
+                return [
+                    'id' => $article->id,
+                    'name' => $article->name,
+                    'sku' => $article->sku,
+                    'price' => $priceNet,                 // NETTO in Euro (Rückwärtskompatibilität)
+                    'price_net' => $priceNet,             // explizit: Netto in Euro
+                    'price_basis' => 'net',
+                    'vat_percent' => $vatPercent !== null ? (float) $vatPercent : null,
+                    'single_price_net_cents' => $priceNet !== null ? (int) round($priceNet * 100) : null, // easybill-ready
+                    'unit' => $article->base_price_unit,
+                    'description' => $article->description,
+                    'commerce_article_type_id' => $article->commerce_article_type_id,
+                    'revenue_account' => $article->revenue_account,
+                    'effective_revenue_account' => $article->effective_revenue_account,
+                    'stock_level' => (int)$article->stock_level,
+                    'is_available' => (bool)$article->is_available,
+                    'team_id' => $article->team_id,
+                ];
+            })->values()->toArray();
 
             return ToolResult::success([
                 'data' => $items,
