@@ -72,6 +72,14 @@ class CommerceServiceProvider extends ServiceProvider
             \Platform\Core\Contracts\CatalogArticleCategoryListProviderInterface::class,
             \Platform\Commerce\Services\CoreCatalogArticleCategoryListProvider::class
         );
+
+        // Bestandsfuehrung als Core-Contract veroeffentlichen, damit andere
+        // Module (Einkauf/Verkauf) gegen das Interface buchen, statt gegen die
+        // Commerce-Models. Delegiert intern an den bestehenden InventoryManager.
+        $this->app->singleton(
+            \Platform\Core\Contracts\InventoryManagerInterface::class,
+            \Platform\Commerce\Services\CoreInventoryManager::class
+        );
     }
 
     /**
@@ -89,11 +97,21 @@ class CommerceServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Relation::morphMap([
-            'commerce_product' => \Platform\Commerce\Models\CommerceProduct::class,
-            'commerce_article' => \Platform\Commerce\Models\CommerceArticle::class,
-            'commerce_sale'    => \Platform\Commerce\Models\CommerceSale::class,
-            'commerce_catalog' => \Platform\Commerce\Models\CommerceCatalog::class,
+            'commerce_product'   => \Platform\Commerce\Models\CommerceProduct::class,
+            'commerce_article'   => \Platform\Commerce\Models\CommerceArticle::class,
+            'commerce_sale'      => \Platform\Commerce\Models\CommerceSale::class,
+            'commerce_sale_item' => \Platform\Commerce\Models\CommerceSaleItem::class,
+            'commerce_catalog'   => \Platform\Commerce\Models\CommerceCatalog::class,
         ]);
+
+        // FLYNK-Kontext-Lieferant registrieren (loose Kopplung mit FlynkConnector).
+        // Liefert die Leistungen (services[]) aus den Katalogen des Knotens.
+        try {
+            resolve(\Platform\FlynkConnector\Services\FlynkContextRegistry::class)
+                ->register(new \Platform\Commerce\Flynk\CommerceFlynkContextProvider());
+        } catch (\Throwable $e) {
+            // FlynkConnector-Modul nicht geladen
+        }
 
         /**
          * SCHRITT 1: Modul-Registrierung prüfen
@@ -383,6 +401,12 @@ class CommerceServiceProvider extends ServiceProvider
             $registry->register(new \Platform\Commerce\Tools\CreateSaleItemTool());
             $registry->register(new \Platform\Commerce\Tools\UpdateSaleItemTool());
             $registry->register(new \Platform\Commerce\Tools\DeleteSaleItemTool());
+
+            // Sale Statusuebergaenge (koppeln an die Bestandsfuehrung)
+            $registry->register(new \Platform\Commerce\Tools\ConfirmSaleTool());
+            $registry->register(new \Platform\Commerce\Tools\CompleteSaleTool());
+            $registry->register(new \Platform\Commerce\Tools\CancelSaleTool());
+            $registry->register(new \Platform\Commerce\Tools\RefundSaleTool());
 
             // Product Rules
             $registry->register(new \Platform\Commerce\Tools\ListProductRulesTool());
