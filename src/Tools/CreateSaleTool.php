@@ -39,8 +39,8 @@ class CreateSaleTool implements ToolContract, ToolMetadataContract
                 ],
                 'status' => [
                     'type' => 'string',
-                    'description' => 'Optional: Status (default: "draft"). Erlaubte Werte: draft, pending, confirmed, completed, cancelled, refunded.',
-                    'enum' => ['draft', 'pending', 'confirmed', 'completed', 'cancelled', 'refunded'],
+                    'description' => 'Optional: Start-Status (default: "draft"). Nur draft oder pending. Gebuchte Zustaende (confirmed/completed/...) NICHT hier setzen, sondern ueber commerce.sales.confirm/complete/cancel/refund (die den Bestand buchen).',
+                    'enum' => ['draft', 'pending'],
                 ],
                 'paid_at' => [
                     'type' => 'string',
@@ -79,13 +79,21 @@ class CreateSaleTool implements ToolContract, ToolMetadataContract
                 return ToolResult::error('VALIDATION_ERROR', 'total_amount ist erforderlich.');
             }
 
+            $status = array_key_exists('status', $arguments) && $arguments['status'] !== null
+                ? (string)$arguments['status']
+                : 'draft';
+            if (!in_array($status, ['draft', 'pending'], true)) {
+                return ToolResult::error(
+                    'VALIDATION_ERROR',
+                    'Ein Verkauf kann nur als "draft" oder "pending" angelegt werden. Fuer gebuchte Zustaende nutze commerce.sales.confirm/complete/cancel/refund (buchen den Bestand).'
+                );
+            }
+
             $data = [
                 'team_id' => $team->id,
                 'user_id' => $context->user->id,
                 'total_amount' => (float)$arguments['total_amount'],
-                'status' => array_key_exists('status', $arguments) && $arguments['status'] !== null
-                    ? (string)$arguments['status']
-                    : 'draft',
+                'status' => $status,
                 'paid_at' => array_key_exists('paid_at', $arguments) && $arguments['paid_at'] !== null
                     ? (string)$arguments['paid_at']
                     : null,

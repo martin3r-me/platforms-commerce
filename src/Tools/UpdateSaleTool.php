@@ -45,8 +45,8 @@ class UpdateSaleTool implements ToolContract, ToolMetadataContract
                 ],
                 'status' => [
                     'type' => 'string',
-                    'description' => 'Optional: Neuer Status. Erlaubte Werte: draft, pending, confirmed, completed, cancelled, refunded.',
-                    'enum' => ['draft', 'pending', 'confirmed', 'completed', 'cancelled', 'refunded'],
+                    'description' => 'Optional: nur zum Umschalten zwischen draft und pending (Vorbuchungsphase). Gebuchte Uebergaenge (confirmed/completed/cancelled/refunded) laufen ueber commerce.sales.confirm/complete/cancel/refund und buchen den Bestand.',
+                    'enum' => ['draft', 'pending'],
                 ],
                 'paid_at' => [
                     'type' => 'string',
@@ -105,8 +105,24 @@ class UpdateSaleTool implements ToolContract, ToolMetadataContract
                 $update['total_amount'] = (float)$arguments['total_amount'];
             }
 
-            if (array_key_exists('status', $arguments)) {
-                $update['status'] = (string)$arguments['status'];
+            if (array_key_exists('status', $arguments) && $arguments['status'] !== null) {
+                $target = (string)$arguments['status'];
+                if (!in_array($target, ['draft', 'pending'], true)) {
+                    return ToolResult::error(
+                        'VALIDATION_ERROR',
+                        'Statuswechsel zu "'.$target.'" bitte über commerce.sales.confirm/complete/cancel/refund (bucht den Bestand), nicht über PATCH.'
+                    );
+                }
+                $current = $sale->status instanceof \Platform\Commerce\Enums\SaleStatus
+                    ? $sale->status->value
+                    : (string)$sale->status;
+                if (!in_array($current, ['draft', 'pending'], true)) {
+                    return ToolResult::error(
+                        'VALIDATION_ERROR',
+                        'Ein bereits gebuchter Verkauf ("'.$current.'") kann nicht per PATCH umgesetzt werden. Nutze commerce.sales.cancel bzw. commerce.sales.refund.'
+                    );
+                }
+                $update['status'] = $target;
             }
 
             if (array_key_exists('paid_at', $arguments)) {
